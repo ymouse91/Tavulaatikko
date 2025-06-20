@@ -46,17 +46,20 @@
       font-size: 1.4em;
     }
 
-    .scroll-box {
+.scroll-box {
   max-height: 200px;
   overflow-y: auto;
   margin: 10px auto;
   padding: 10px;
   border: 1px solid #ccc;
   width: 60%;
-      background: #f9f9f9;
-      text-align: left;
-      font-size: 18px;
-    }
+  min-width: 280px;      /* minimi leveys */
+  max-width: 600px;      /* maksimi leveys */
+  background: #f9f9f9;
+  text-align: left;
+  font-size: 18px;
+}
+
   #sizeLabel,
     #size {
       font-size: 18px;
@@ -80,12 +83,20 @@ button#startBtn,
 button#lopetaBtn,
 button#apuaBtn {
   font-size: 16px;
-  padding: 8px 20px;
+  padding: 2px 4px;
   border-radius: 6px;
   border: 1px solid #888;
   background-color: #f0f0f0;
   cursor: pointer;
   margin: 4px;
+}
+.scroll-box a {
+  text-decoration: none;
+  color: #000; /* halutessasi voit säilyttää tumman värin */
+}
+.scroll-box a:hover {
+  text-decoration: underline;
+  color: #0077cc;
 }
 
   </style>
@@ -319,19 +330,22 @@ button#apuaBtn {
     }
 
     // Paljastaa yhden oikeassa paikassa olevan tavun pelaajalle
-    function annaApua() {
-      if (!peliKaynnissa) return;
+function annaApua() {
+  if (!peliKaynnissa) return;
 
-      for (let i = 0; i < nykyinen.length; i++) {
-        const oikea = ratkaisu[Math.floor(i / koko)][i % koko];
-        if (nykyinen[i] === oikea && !korostukset.has(i)) {
-          korostukset.add(i);
-          render();
-          return;
-        }
-      }
-      alert("Ei löytynyt uutta oikeaa tavua paljastettavaksi.");
+  for (let i = 0; i < nykyinen.length; i++) {
+    const r = Math.floor(i / koko);
+    const c = i % koko;
+    const oikea = ratkaisu[r][c];
+    if (nykyinen[i] === oikea && !korostukset.has(i)) {
+      korostukset.add(i);
+      render();
+      return;
     }
+  }
+  alert("Ei löytynyt uutta oikeaa tavua paljastettavaksi.");
+}
+
 
     // Apufunktio: sekoittaa annetun taulukon
     function shuffle(arr) {
