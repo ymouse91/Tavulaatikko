@@ -208,6 +208,7 @@ button#apuaBtn {
     // Vaihtaa kahden tavun paikkaa pelaajan klikkauksella
     function valitseTaiVaihda(i) {
       if (!peliKaynnissa) return;
+      if (lukitut.has(i)) return;
 
       if (valinta === null) {
         valinta = i;
