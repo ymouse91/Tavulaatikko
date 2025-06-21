@@ -134,7 +134,7 @@ button#apuaBtn {
     let valinta = null;
     let peliKaynnissa = true;
     let korostukset = new Set();
-
+    let lukitut = new Set(); // ← tämä lisättiin
     let sallitutSanat = new Set();
     let tavulista = [];
 
@@ -181,6 +181,7 @@ button#apuaBtn {
 
       nykyinen = sekoitetut;
       korostukset.add(oikeaIndeksi);
+	  lukitut.add(oikeaIndeksi); // ← tämä lukitsee alussa paljastetun tavun
       peliKaynnissa = true;
       valinta = null;
 
@@ -213,6 +214,7 @@ button#apuaBtn {
       } else if (valinta === i) {
         valinta = null;
       } else {
+	    if (lukitut.has(i) || lukitut.has(valinta)) return; // ← lisätty ennen vaihtoa
         [nykyinen[i], nykyinen[valinta]] = [nykyinen[valinta], nykyinen[i]];
         valinta = null;
         tarkistaVoitto();
@@ -334,7 +336,7 @@ button#apuaBtn {
       naytaSanat(vaaka, pysty, "Ratkaisun sanat.");
     }
 
-    // Paljastaa yhden oikeassa paikassa olevan tavun pelaajalle
+// Paljastaa yhden oikeassa paikassa olevan tavun pelaajalle
 function annaApua() {
   if (!peliKaynnissa) return;
 
@@ -343,13 +345,16 @@ function annaApua() {
     const c = i % koko;
     const oikea = ratkaisu[r][c];
     if (nykyinen[i] === oikea && !korostukset.has(i)) {
+	  lukitut.add(i); // ← lukitaan oikeaan paikkaan asetettu tavu
       korostukset.add(i);
+      valinta = null; // 🔧 Poistaa keltaisen valinnan
       render();
       return;
     }
   }
   alert("Ei löytynyt uutta oikeaa tavua paljastettavaksi.");
 }
+
 
 
 // Apufunktio: sekoittaa annetun taulukon
