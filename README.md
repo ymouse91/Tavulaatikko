@@ -38,7 +38,7 @@ Voit aloittaa uuden pelin valitsemalla koon ja painamalla "Aloita peli" uudellee
 
 1. Lataa tai kloonaa repositorio:
    ```bash
-   git clone https://github.com/ymouse91/tavupeli.git
+   git clone https://github.com/ymouse91/Tavulaatikko.git
    ```
 2. Avaa `index.html` selaimessa – toimii täysin ilman palvelinta.
 
