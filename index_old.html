@@ -36,10 +36,6 @@
       background-color: #cfc;
     }
 
-    .grid button.flash-error {
-      background-color: #fcc !important;
-    }
-
     .controls {
       margin-bottom: 15px;
     }
@@ -50,66 +46,63 @@
       font-size: 1.4em;
     }
 
-    .scroll-box {
-      max-height: 200px;
-      overflow-y: auto;
-      margin: 10px auto;
-      padding: 10px;
-      border: 1px solid #ccc;
-      width: 60%;
-      min-width: 260px;
-      max-width: 600px;
-      background: #f9f9f9;
-      text-align: left;
-      font-size: 18px;
-    }
+.scroll-box {
+  max-height: 200px;
+  overflow-y: auto;
+  margin: 10px auto;
+  padding: 10px;
+  border: 1px solid #ccc;
+  width: 60%;
+  min-width: 260px;      /* minimi leveys */
+  max-width: 600px;      /* maksimi leveys */
+  background: #f9f9f9;
+  text-align: left;
+  font-size: 18px;
+}
 
-    #sizeLabel,
+  #sizeLabel,
     #size {
       font-size: 18px;
       font-weight: bold;
     }
-
-    button:hover {
+  button:hover {
       background-color: #ddd;
     }
-
+      /* Napit hover-väreillä */
     #startBtn:hover {
       background-color: #cfc;
     }
-
     #lopetaBtn:hover {
       background-color: #fdd;
     }
-
     #apuaBtn:hover {
       background-color: #fffbcc;
     }
+	
+button#startBtn,
+button#lopetaBtn,
+button#apuaBtn {
+  font-size: 16px;
+  padding: 2px 4px;
+  border-radius: 6px;
+  border: 1px solid #888;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  margin: 4px;
+}
+.scroll-box a {
+  text-decoration: none;
+  color: #000; /* halutessasi voit säilyttää tumman värin */
+}
+.scroll-box a:hover {
+  text-decoration: underline;
+  color: #0077cc;
+}
 
-    button#startBtn,
-    button#lopetaBtn,
-    button#apuaBtn {
-      font-size: 16px;
-      padding: 2px 4px;
-      border-radius: 6px;
-      border: 1px solid #888;
-      background-color: #f0f0f0;
-      cursor: pointer;
-      margin: 4px;
-    }
-
-    .scroll-box a {
-      text-decoration: none;
-      color: #000;
-    }
-
-    .scroll-box a:hover {
-      text-decoration: underline;
-      color: #0077cc;
-    }
   </style>
 </head>
 <body>
+  <!-- Käyttöliittymän otsikko ja napit -->
   <h1>Tavulaatikko</h1>
   <div class="controls">
     <label for="size" id="sizeLabel">Valitse koko:</label>
@@ -123,26 +116,29 @@
     <button id="apuaBtn" onclick="annaApua()" style="display:none">Apua</button>
   </div>
 
+  <!-- Peliruudukko ja tulosalue -->
   <div id="grid" class="grid"></div>
   <div id="status" class="won"></div>
 
+  <!-- Varsinainen pelilogiikka alkaa -->
   <script>
     const gridElem = document.getElementById("grid");
     const statusElem = document.getElementById("status");
     const startBtn = document.getElementById("startBtn");
     const lopetaBtn = document.getElementById("lopetaBtn");
 
+    // Pelin tilamuuttujat
     let koko = 3;
     let ratkaisu = [];
     let nykyinen = [];
     let valinta = null;
     let peliKaynnissa = true;
     let korostukset = new Set();
-    let lukitut = new Set();
+    let lukitut = new Set(); // ← tämä lisättiin
     let sallitutSanat = new Set();
     let tavulista = [];
-    let vilautusIndeksi = null;
 
+    // Ladataan sanalista tekstimuodossa (vain kerran)
     async function lataaSanat() {
       const response = await fetch("sallitut_sanat.txt");
       const teksti = await response.text();
@@ -157,6 +153,7 @@
       startBtn.disabled = false;
     }
 
+    // Käynnistää uuden pelin, piilottaa ja näyttää napit oikein
     function startGame() {
       document.getElementById("size").style.display = "none";
       document.getElementById("sizeLabel").style.display = "none";
@@ -166,7 +163,7 @@
 
       statusElem.innerHTML = "";
       if (sallitutSanat.size === 0) {
-        alert("Sanoja ei ladattu.");
+        alert("Sanoja ei ladattu. Varmista, että sanalista on paikallaan ja ladattu.");
         return;
       }
 
@@ -175,7 +172,7 @@
 
       const tavut = ratkaisu.flat();
       korostukset.clear();
-      lukitut.clear();
+      lukitut.clear(); // ← Tämä puuttui
       const oikeaIndeksi = Math.floor(Math.random() * tavut.length);
       const oikeaTavu = tavut[oikeaIndeksi];
       const tavutIlman = tavut.filter((_, i) => i !== oikeaIndeksi);
@@ -184,13 +181,14 @@
 
       nykyinen = sekoitetut;
       korostukset.add(oikeaIndeksi);
-      lukitut.add(oikeaIndeksi);
+	  lukitut.add(oikeaIndeksi); // ← tämä lukitsee alussa paljastetun tavun
       peliKaynnissa = true;
       valinta = null;
 
       render();
     }
 
+    // Piirtää peliruudukon selaimeen
     function render() {
       gridElem.style.gridTemplateColumns = `repeat(${koko}, 60px)`;
       gridElem.innerHTML = "";
@@ -202,31 +200,31 @@
 
         if (valinta === i) btn.style.background = "#ffc";
         if (korostukset.has(i)) btn.classList.add("correct");
-        if (i === vilautusIndeksi) btn.classList.add("flash-error");
 
         gridElem.appendChild(btn);
       }
     }
 
+    // Vaihtaa kahden tavun paikkaa pelaajan klikkauksella
     function valitseTaiVaihda(i) {
       if (!peliKaynnissa) return;
+if (lukitut.has(i)) {
+  const btn = gridElem.children[i];
+  btn.classList.add("flash-error");
+  setTimeout(() => {
+    btn.classList.remove("flash-error");
+  }, 400);
+  return;
+}
 
-      if (lukitut.has(i)) {
-        vilautusIndeksi = i;
-        render();
-        setTimeout(() => {
-          vilautusIndeksi = null;
-          render();
-        }, 400);
-        return;
-      }
+
 
       if (valinta === null) {
         valinta = i;
       } else if (valinta === i) {
         valinta = null;
       } else {
-        if (lukitut.has(i) || lukitut.has(valinta)) return;
+	    if (lukitut.has(i) || lukitut.has(valinta)) return; // ← lisätty ennen vaihtoa
         [nykyinen[i], nykyinen[valinta]] = [nykyinen[valinta], nykyinen[i]];
         valinta = null;
         tarkistaVoitto();
@@ -234,6 +232,7 @@
       render();
     }
 
+    // Arpoo ja muodostaa kelvollisen tavuruudukon
     function generoiKelvollinenRuudukko(n) {
       const grid = Array.from({ length: n }, () => Array(n).fill(""));
       const maxYritykset = 10000;
@@ -241,15 +240,19 @@
 
       while (yritykset++ < maxYritykset) {
         const käytetyt = {};
+
         for (let r = 0; r < n; r++) {
           for (let c = 0; c < n; c++) {
             const ehdokkaat = shuffle([...tavulista]);
             let asetettu = false;
+
             for (const tavu of ehdokkaat) {
               if ((käytetyt[tavu] || 0) >= 1) continue;
               grid[r][c] = tavu;
-              const vasenOk = c === 0 || sallitutSanat.has(`${grid[r][c - 1]}-${tavu}`);
-              const ylaOk = r === 0 || sallitutSanat.has(`${grid[r - 1][c]}-${tavu}`);
+
+              const vasenOk = c === 0 || sallitutSanat.has(`${grid[r][c-1]}-${tavu}`);
+              const ylaOk = r === 0 || sallitutSanat.has(`${grid[r-1][c]}-${tavu}`);
+
               if (vasenOk && ylaOk) {
                 käytetyt[tavu] = (käytetyt[tavu] || 0) + 1;
                 asetettu = true;
@@ -257,9 +260,11 @@
               }
               grid[r][c] = "";
             }
+
             if (!asetettu) break;
           }
         }
+
         if (grid.flat().every(t => t)) return grid;
       }
 
@@ -267,6 +272,7 @@
       return Array.from({ length: n }, () => Array(n).fill("??"));
     }
 
+    // Tarkistaa voiton ja näyttää tulossanat vierityslaatikossa
     function naytaSanat(vaaka, pysty, otsikko) {
       statusElem.innerHTML = `
         <div>${otsikko}</div>
@@ -285,32 +291,36 @@
       for (let r = 0; r < koko; r++) {
         grid.push(nykyinen.slice(r * koko, (r + 1) * koko));
       }
+
       for (let r = 0; r < koko; r++) {
         for (let c = 0; c < koko; c++) {
-          if (c < koko - 1 && !sallitutSanat.has(`${grid[r][c]}-${grid[r][c + 1]}`)) return;
-          if (r < koko - 1 && !sallitutSanat.has(`${grid[r][c]}-${grid[r + 1][c]}`)) return;
+          if (c < koko - 1 && !sallitutSanat.has(`${grid[r][c]}-${grid[r][c+1]}`)) return;
+          if (r < koko - 1 && !sallitutSanat.has(`${grid[r][c]}-${grid[r+1][c]}`)) return;
         }
       }
+
       const vaaka = [], pysty = [];
       for (let r = 0; r < koko; r++) {
         for (let c = 0; c < koko - 1; c++) {
-          vaaka.push(`${grid[r][c]}-${grid[r][c + 1]}`);
+          vaaka.push(`${grid[r][c]}-${grid[r][c+1]}`);
         }
       }
       for (let c = 0; c < koko; c++) {
         for (let r = 0; r < koko - 1; r++) {
-          pysty.push(`${grid[r][c]}-${grid[r + 1][c]}`);
+          pysty.push(`${grid[r][c]}-${grid[r+1][c]}`);
         }
       }
+
       document.getElementById("size").style.display = "inline-block";
       document.getElementById("sizeLabel").style.display = "inline-block";
       document.getElementById("startBtn").style.display = "inline-block";
       document.getElementById("lopetaBtn").style.display = "none";
       document.getElementById("apuaBtn").style.display = "none";
-      peliKaynnissa = false;
+	  peliKaynnissa = false;
       naytaSanat(vaaka, pysty, "Voitit!");
     }
 
+    // Näyttää alkuperäisen ratkaisun ja tulostaa sanat
     function naytaRatkaisu() {
       document.getElementById("size").style.display = "inline-block";
       document.getElementById("sizeLabel").style.display = "inline-block";
@@ -325,54 +335,75 @@
       const vaaka = [], pysty = [];
       for (let r = 0; r < koko; r++) {
         for (let c = 0; c < koko - 1; c++) {
-          vaaka.push(`${ratkaisu[r][c]}-${ratkaisu[r][c + 1]}`);
+          vaaka.push(`${ratkaisu[r][c]}-${ratkaisu[r][c+1]}`);
         }
       }
       for (let c = 0; c < koko; c++) {
         for (let r = 0; r < koko - 1; r++) {
-          pysty.push(`${ratkaisu[r][c]}-${ratkaisu[r + 1][c]}`);
+          pysty.push(`${ratkaisu[r][c]}-${ratkaisu[r+1][c]}`);
         }
       }
+
       naytaSanat(vaaka, pysty, "Ratkaisun sanat.");
     }
 
-    function annaApua() {
-      if (!peliKaynnissa) return;
-      for (let i = 0; i < nykyinen.length; i++) {
-        const r = Math.floor(i / koko);
-        const c = i % koko;
-        const oikea = ratkaisu[r][c];
-        if (nykyinen[i] === oikea && !korostukset.has(i)) {
-          lukitut.add(i);
-          korostukset.add(i);
-          valinta = null;
-          render();
-          return;
-        }
-      }
-      alert("Ei löytynyt uutta oikeaa tavua paljastettavaksi.");
-    }
+// Paljastaa yhden oikeassa paikassa olevan tavun pelaajalle
+function annaApua() {
+  if (!peliKaynnissa) return;
 
-    function shuffle(arr) {
-      let a = [...arr];
-      for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      return a;
+  for (let i = 0; i < nykyinen.length; i++) {
+    const r = Math.floor(i / koko);
+    const c = i % koko;
+    const oikea = ratkaisu[r][c];
+    if (nykyinen[i] === oikea && !korostukset.has(i)) {
+	  lukitut.add(i); // ← lukitaan oikeaan paikkaan asetettu tavu
+      korostukset.add(i);
+      valinta = null; // 🔧 Poistaa keltaisen valinnan
+      render();
+      return;
     }
+  }
+  alert("Ei löytynyt uutta oikeaa tavua paljastettavaksi.");
+}
 
+
+
+// Apufunktio: sekoittaa annetun taulukon
+function shuffle(arr) {
+  let a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+
+    // Ladataan sanalista heti sivun alussa
     lataaSanat().then(() => console.log("Sanalista ladattu."));
+	
+	if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js')
+    .then(() => console.log('Service Worker rekisteröity'))
+    .catch(err => console.error('SW virhe', err));
+}
 
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log('Service Worker rekisteröity'))
-        .catch(err => console.error('SW virhe', err));
-    }
   </script>
-
-  <footer style="position: fixed; bottom: 4px; right: 6px; font-size: 11px;">
-    Versio 1.0.2
-  </footer>
+  <footer style="
+  position: fixed;
+  bottom: 4px;
+  right: 6px;
+  font-size: 11px;
+  color: #000000; /* musta teksti */
+  //background-color: #ffa500; /* kirkas oranssi */
+  padding: 4px 8px;
+  z-index: 9999;
+  //border: 1px solid #888;
+  border-radius: 4px;
+  //box-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+  font-family: sans-serif;
+">
+  Versio 1.0.1
+</footer>
 </body>
 </html>
