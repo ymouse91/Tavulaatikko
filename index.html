@@ -107,8 +107,8 @@ button#apuaBtn {
   <div class="controls">
     <label for="size" id="sizeLabel">Valitse koko:</label>
     <select id="size">
-      <option value="3">3×3</option>
-      <option value="4" selected>4×4</option>
+      <option value="3" selected>3×3</option>
+      <option value="4">4×4</option>
       <option value="5">5×5</option>
     </select>
     <button id="startBtn" onclick="startGame()" disabled>Aloita peli</button>
@@ -128,7 +128,7 @@ button#apuaBtn {
     const lopetaBtn = document.getElementById("lopetaBtn");
 
     // Pelin tilamuuttujat
-    let koko = 4;
+    let koko = 3;
     let ratkaisu = [];
     let nykyinen = [];
     let valinta = null;
@@ -299,6 +299,11 @@ button#apuaBtn {
         }
       }
 
+      document.getElementById("size").style.display = "inline-block";
+      document.getElementById("sizeLabel").style.display = "inline-block";
+      document.getElementById("startBtn").style.display = "inline-block";
+      document.getElementById("lopetaBtn").style.display = "none";
+      document.getElementById("apuaBtn").style.display = "none";
       naytaSanat(vaaka, pysty, "Voitit!");
     }
 
@@ -347,10 +352,16 @@ function annaApua() {
 }
 
 
-    // Apufunktio: sekoittaa annetun taulukon
-    function shuffle(arr) {
-      return [...arr].sort(() => Math.random() - 0.5);
-    }
+// Apufunktio: sekoittaa annetun taulukon
+function shuffle(arr) {
+  let a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 
     // Ladataan sanalista heti sivun alussa
     lataaSanat().then(() => console.log("Sanalista ladattu."));
@@ -362,5 +373,21 @@ function annaApua() {
 }
 
   </script>
+  <footer style="
+  position: fixed;
+  bottom: 4px;
+  right: 6px;
+  font-size: 11px;
+  color: #000000; /* musta teksti */
+  //background-color: #ffa500; /* kirkas oranssi */
+  padding: 4px 8px;
+  z-index: 9999;
+  //border: 1px solid #888;
+  border-radius: 4px;
+  //box-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+  font-family: sans-serif;
+">
+  Versio 1.0.1
+</footer>
 </body>
 </html>
