@@ -172,7 +172,7 @@ button#apuaBtn {
 
       const tavut = ratkaisu.flat();
       korostukset.clear();
-
+      lukitut.clear(); // ← Tämä puuttui
       const oikeaIndeksi = Math.floor(Math.random() * tavut.length);
       const oikeaTavu = tavut[oikeaIndeksi];
       const tavutIlman = tavut.filter((_, i) => i !== oikeaIndeksi);
