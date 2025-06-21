@@ -30,7 +30,7 @@ Voit aloittaa uuden pelin valitsemalla koon ja painamalla "Aloita peli" uudellee
 
 ## 🌐 Demo
 
-➡️ [Pelaa verkossa GitHub Pagesissä](https://ymouse91.github.io/tavulaatikko/)
+➡️ [Pelaa verkossa GitHub Pagesissä](https://ymouse91.github.io/Tavulaatikko/)
 
 > Korvaa osoite omallasi
 
