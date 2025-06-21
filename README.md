@@ -1,6 +1,6 @@
-# Tavupeli – Sanaruudukko
+# Tavulaatikko – Sanaruudukko
 
-**Tavupeli** on selainpohjainen suomenkielinen sanapeli, jossa pelaajan tehtävänä on järjestää tavuja ruudukkoon niin, että **jokainen vaakaan ja pystyyn muodostuva tavupari muodostaa oikean kaksitavuisen sanan**.
+**Tavulaatikko** on selainpohjainen suomenkielinen sanapeli, jossa pelaajan tehtävänä on järjestää tavuja ruudukkoon niin, että **jokainen vaakaan ja pystyyn muodostuva tavupari muodostaa oikean kaksitavuisen sanan**.
 
 Peli toimii 3×3–5×5 ruudukossa ja on kehitetty HTML-, CSS- ja JavaScript-teknologioilla. Sovellus on asennettavissa myös mobiililaitteille (PWA).
 
@@ -30,9 +30,7 @@ Voit aloittaa uuden pelin valitsemalla koon ja painamalla "Aloita peli" uudellee
 
 ## 🌐 Demo
 
-➡️ [Pelaa verkossa GitHub Pagesissä](https://käyttäjä.github.io/tavupeli/)
-
-> Korvaa osoite omallasi
+➡️ [Pelaa verkossa GitHub Pagesissä](https://ymouse91.github.io/tavupeli/)
 
 ---
 
@@ -40,7 +38,7 @@ Voit aloittaa uuden pelin valitsemalla koon ja painamalla "Aloita peli" uudellee
 
 1. Lataa tai kloonaa repositorio:
    ```bash
-   git clone https://github.com/käyttäjä/tavupeli.git
+   git clone https://github.com/ymouse91/tavupeli.git
    ```
 2. Avaa `index.html` selaimessa – toimii täysin ilman palvelinta.
 
@@ -48,7 +46,7 @@ Voit aloittaa uuden pelin valitsemalla koon ja painamalla "Aloita peli" uudellee
 
 ## 📱 PWA (Progressive Web App)
 
-Tavupeli on asennettavissa kotinäytölle:
+Tavulaatikko on asennettavissa kotinäytölle:
 
 - Lisää sovellus mobiiliselaimesta (esim. Chrome > Lisää aloitusnäyttöön)
 - Toimii offline-tilassa (service worker + välimuisti)
