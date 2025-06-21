@@ -20,17 +20,22 @@
       margin: 20px auto;
     }
 
-    .grid button {
-      padding: 8px 16px;
-      border-radius: 6px;
-      border: 1px solid #888;
-      background-color: #f0f0f0;
-      cursor: pointer;
-      transition: background 0.2s ease;
-      width: 60px;
-      height: 60px;
-      font-size: 18px;
-    }
+.grid button {
+  display: flex;
+  align-items: center;      /* pystysuuntainen keskitys */
+  justify-content: center;  /* leveyssuuntainen keskitys */
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #888;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  width: 60px;
+  height: 60px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
 
     .grid button.correct {
       background-color: #cfc;
