@@ -1,14 +1,12 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep, time
 import random
 import os
 import sys
-import subprocess
 
 INPUT = "sanat.txt"
 OUTPUT = "uudet_sanat.txt"
@@ -16,8 +14,8 @@ INDEKSI_TIEDOSTO = "viimeinen_indeksi.txt"
 
 # Merkinnät, joiden esiintyessä sana hylätään
 EPAVIRALLISET_TERMIT = [
-    "ark.", "puhek.", "mur.", "slg.", "last.",
-    "leik.", "vulg.", "halv.", "alhaist.", "rahv.", "vanh."
+    "ark.", "puhek.", "murt.", "slg.", "last.",
+    "leik.", "halv.", "alat.", "ylät.", "vanh."
 ]
 
 def onko_yleiskielinen(sana, driver):
@@ -31,16 +29,27 @@ def onko_yleiskielinen(sana, driver):
     except Exception:
         with open("viimeinen_virhesivu.html", "w", encoding="utf-8") as f:
             f.write(driver.page_source)
-        print("\n❌ DOM ei ilmestynyt. Todennäköisesti selain on estotilassa. Tallennetaan indeksi ja pysäytetään.")
+        print("\n❌ DOM ei ilmestynyt. Tallennetaan indeksi ja pysäytetään.")
         raise RuntimeError("DOM ei ilmestynyt")
 
+    # Haetaan ensimmäinen määritelmä (definition)
     try:
-        eka_määritelma = driver.find_element(By.CLASS_NAME, "definition").text.lower()
-    except Exception:
-        raise RuntimeError("Määritelmä puuttuu.")
+        eka_def_elem = driver.find_element(By.CLASS_NAME, "definition")
+        eka_def_text = eka_def_elem.text.lower()
+    except:
+        eka_def_text = ""
+
+    # Haetaan heti seuraava elementti (yleensä tyyli/sanaluokka)
+    try:
+        seuraava = eka_def_elem.find_element(By.XPATH, "following-sibling::*[1]").text.lower()
+    except:
+        seuraava = ""
+
+    # Yhdistetään molemmat tarkastelua varten
+    teksti = eka_def_text + "\n" + seuraava
 
     for termi in EPAVIRALLISET_TERMIT:
-        if termi in eka_määritelma:
+        if termi in teksti:
             return False, termi
 
     sleep(random.uniform(2.01, 3.2))
@@ -85,8 +94,7 @@ def prosessoi(jatka_vain):
             with open(INDEKSI_TIEDOSTO, "w", encoding="utf-8") as f:
                 f.write(str(tehty))
             driver.quit()
-            raise  # anna poikkeuksen kulkea ulos asti, jolloin exit code ≠ 0
-
+            raise
 
         if ok:
             print("✅ OK")

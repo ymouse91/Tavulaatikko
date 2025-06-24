@@ -182,7 +182,6 @@ bran-di
 bran-dy
 breik-kaus
 breik-ki
-briif-faus
 brit-ti
 brän-di
 bu-do
@@ -193,14 +192,11 @@ bus-si
 buu-aus
 buu-ri
 by-te
-bä-net
-bä-nät
 ca-se
 ca-va
 cam-ping
 cam-pus
 can-can
-ce-sium
 chat-ti
 chi-a
 chi-li
@@ -636,7 +632,6 @@ his-si
 hit-saus
 hit-si
 hiu-e
-hiu-ka
 hiu-kan
 ho-hoi
 ho-ki
