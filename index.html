@@ -121,7 +121,7 @@
     <select id="size">
       <option value="3" selected>3×3</option>
       <option value="4">4×4</option>
-      <option value="5">5×5</option>
+
     </select>
     <button id="startBtn" onclick="startGame()" disabled>Aloita peli</button>
     <button id="lopetaBtn" onclick="naytaRatkaisu()" style="display:none">Lopeta – näytä ratkaisu</button>
@@ -181,15 +181,46 @@
       const tavut = ratkaisu.flat();
       korostukset.clear();
       lukitut.clear();
-      const oikeaIndeksi = Math.floor(Math.random() * tavut.length);
-      const oikeaTavu = tavut[oikeaIndeksi];
-      const tavutIlman = tavut.filter((_, i) => i !== oikeaIndeksi);
-      const sekoitetut = shuffle(tavutIlman);
-      sekoitetut.splice(oikeaIndeksi, 0, oikeaTavu);
+let oikeatIndeksit = [];
 
-      nykyinen = sekoitetut;
-      korostukset.add(oikeaIndeksi);
-      lukitut.add(oikeaIndeksi);
+const valitseIndeksi = () => Math.floor(Math.random() * tavut.length);
+
+// Valitse ensimmäinen satunnainen indeksi
+const eka = valitseIndeksi();
+oikeatIndeksit.push(eka);
+
+// Jos 5x5, valitaan toinen eri riviltä ja sarakkeelta
+if (koko === 4) {
+  const r1 = Math.floor(eka / koko);
+  const c1 = eka % koko;
+
+  // Etsitään kaikki indeksit eri riviltä ja sarakkeelta
+  const kelvolliset = [];
+  for (let i = 0; i < tavut.length; i++) {
+    const r2 = Math.floor(i / koko);
+    const c2 = i % koko;
+    if (r2 !== r1 && c2 !== c1) kelvolliset.push(i);
+  }
+
+  // Valitaan satunnaisesti yksi kelvollisista
+  if (kelvolliset.length > 0) {
+    const toinen = kelvolliset[Math.floor(Math.random() * kelvolliset.length)];
+    oikeatIndeksit.push(toinen);
+  }
+}
+
+const tavutIlman = tavut.filter((_, i) => !oikeatIndeksit.includes(i));
+const sekoitetut = shuffle(tavutIlman);
+
+// Aseta oikeat tavut oikeille paikoilleen
+for (const i of oikeatIndeksit) {
+  sekoitetut.splice(i, 0, tavut[i]);
+  korostukset.add(i);
+  lukitut.add(i);
+}
+
+nykyinen = sekoitetut;
+
       peliKaynnissa = true;
       valinta = null;
 
