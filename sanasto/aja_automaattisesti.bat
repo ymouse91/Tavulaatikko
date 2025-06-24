@@ -5,8 +5,8 @@ echo Käynnistetään suodatus...
 python suodata_yleiskieli.py --jatka
 IF %ERRORLEVEL% NEQ 0 (
     echo ---
-    echo Ohjelma keskeytyi, odotetaan 10 sekuntia ja yritetään uudestaan...
-    timeout /t 10 >nul
+    echo Ohjelma keskeytyi, odotetaan 2 sekuntia ja yritetään uudestaan...
+    timeout /t 1 >nul
     goto uusinta
 )
 echo ---

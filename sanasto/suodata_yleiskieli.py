@@ -52,7 +52,7 @@ def onko_yleiskielinen(sana, driver):
         if termi in teksti:
             return False, termi
 
-    sleep(random.uniform(2.01, 3.2))
+    sleep(random.uniform(0.01, 0.02))
     return True, ""
 
 def prosessoi(jatka_vain):
@@ -115,8 +115,8 @@ def prosessoi(jatka_vain):
         print(f"(arvio jäljellä: {minuutit} min {sekunnit} s)")
 
         if tehty_maara % 20 == 0:
-            print("\n🕓 Pidetään pieni tauko bottisuojan välttämiseksi (11 sekuntia)...\n")
-            sleep(11)
+            print("\n🕓 Pidetään pieni tauko bottisuojan välttämiseksi ( 0.1sekuntia)...\n")
+            sleep(0.1)
 
     driver.quit()
     print(f"\nValmis. Viimeinen indeksi kirjattu tiedostoon {INDEKSI_TIEDOSTO}.")

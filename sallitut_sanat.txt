@@ -33,10 +33,8 @@ aa-pa
 aa-ri
 aa-si
 aa-te
-aa-tos
 aa-va
 aa-ve
-aat-ra
 aat-to
 af-ta
 ah-das
@@ -90,14 +88,12 @@ al-la
 al-las
 al-le
 al-li
-al-mu
 al-pi
 al-ta
 al-tis
 alt-tius
 alt-to
 am-me
-am-moin
 am-mus
 an-keus
 an-nos
@@ -114,7 +110,6 @@ ar-ho
 ar-ka
 ar-ki
 ar-kuus
-ar-mas
 ar-mo
 ar-pa
 ar-pi
@@ -144,7 +139,6 @@ au-raus
 au-tius
 au-to
 au-tuus
-au-vo
 ba-ba
 ba-by
 ba-rium
@@ -161,7 +155,6 @@ bee-si
 bee-ta
 bei-ge
 bi-dee
-biit-si
 biit-ti
 bis-nes
 bit-ter
@@ -207,7 +200,6 @@ co-la
 co-py
 co-ver
 coo-kie
-coo-l
 cous-cous
 cur-ling
 cur-ry
@@ -216,7 +208,6 @@ da-ri
 da-ta
 da-tša
 dan-dy
-dar-ra
 de-bet
 de-gu
 de-ka
@@ -232,12 +223,9 @@ dii-va
 dip-paus
 dip-pi
 dis-ko
-do-kaus
-do-ku
 do-ping
 dog-mi
 don-na
-dor-ka
 dou-la
 drei-ja
 drei-jaus
@@ -247,7 +235,6 @@ dub-lee
 duu-ma
 duu-ri
 dyy-ni
-dö-sä
 e-des
 e-dus
 e-go
@@ -295,10 +282,8 @@ eh-ken
 eh-kä
 eh-ta
 eh-to
-eh-too
 ei-kä
 ei-len
-ei-ne
 ei-nes
 ei-oo
 el-je
@@ -311,7 +296,6 @@ en-sin
 en-tä
 en-täs
 en-tää
-er-he
 er-sä
 es-see
 es-te
@@ -323,7 +307,6 @@ et-sin
 et-tei
 et-tä
 eu-ro
-fa-de
 fa-do
 fa-ni
 fak-ki
@@ -333,25 +316,19 @@ fak-ta
 far-kut
 far-mi
 far-si
-fat-si
 fau-na
 fau-ni
 fe-ta
 fer-ri
 fer-ro
 fet-si
-fi-ba
-fi-baus
 fi-le
 fi-lee
 fi-nis
-fi-su
 fii-kus
 fii-lis
-fik-ka
 fil-maus
 fil-mi
-filt-ti
 flirt-taus
 flirt-ti
 flok-ki
@@ -467,7 +444,6 @@ han-ti
 hap-pi
 hap-po
 hap-ro
-hap-si
 hap-su
 har-ha
 har-ja
@@ -511,7 +487,6 @@ he-le
 he-leys
 he-lium
 he-lo
-he-po
 he-ra
 he-reys
 he-te
@@ -674,7 +649,6 @@ hu-la
 hu-maus
 hu-mu
 hu-mus
-hu-pa
 hu-pi
 hu-raus
 hu-tu
@@ -724,14 +698,12 @@ hur-ja
 hur-juus
 hur-ma
 hur-maus
-hur-me
 hur-mos
 hur-raa
 hurs-kas
 hurs-kaus
 hurs-ti
 hurt-ti
-hut-tu
 huu-li
 huu-ma
 huu-maus
@@ -774,7 +746,6 @@ hyö-ky
 hyö-ty
 hyö-tää
 hyö-tö
-hä-jy
 hä-kä
 hä-ly
 hä-my
@@ -842,7 +813,6 @@ il-ta
 il-ve
 il-ves
 im-myt
-im-pi
 in-dium
 in-ha
 in-ho
@@ -1089,7 +1059,6 @@ ka-mee
 ka-na
 ka-ni
 ka-peus
-ka-pi
 ka-ra
 ka-re
 ka-ri
@@ -1165,7 +1134,6 @@ kaik-keus
 kaik-ki
 kais-la
 kais-ta
-kak-ko
 kak-ku
 kak-si
 kak-sin
@@ -1179,15 +1147,12 @@ kal-las
 kal-leus
 kal-lis
 kal-lo
-kal-ma
 kal-mo
-kal-pa
 kal-peus
 kal-seus
 kal-sium
 kal-toin
 kal-vaa
-kal-vas
 kal-vin
 kal-vo
 kalk-kaa
@@ -1272,7 +1237,6 @@ kas-vo
 kas-vot
 kas-vu
 kat-ka
-kat-ki
 kat-ko
 kat-kos
 kat-ku
@@ -1323,7 +1287,6 @@ ke-räys
 ke-sy
 ke-syys
 ke-sä
-ke-to
 ke-tä
 ke-tään
 ke-veys
@@ -1360,7 +1323,6 @@ kel-vin
 ken-do
 ken-kä
 ken-käin
-ken-kään
 ken-nel
 ken-no
 ken-ties
@@ -1434,7 +1396,6 @@ kier-rin
 kier-ros
 kier-to
 kier-tää
-kih-lat
 kih-laus
 kih-ti
 kii-la
@@ -1444,7 +1405,6 @@ kii-ma
 kii-na
 kii-re
 kii-reys
-kii-ru
 kii-rus
 kii-su
 kii-to
@@ -1473,7 +1433,6 @@ kil-ke
 kil-pa
 kil-pi
 kil-ta
-kil-van
 kilk-ka
 kilk-kaa
 kilk-ki
@@ -1556,7 +1515,6 @@ ko-ru
 ko-ta
 ko-ti
 ko-to
-ko-tus
 ko-va
 ko-vin
 ko-vuus
@@ -1605,7 +1563,6 @@ kolt-tu
 kom-pa
 kon-na
 kon-nuus
-kon-tu
 kont-taus
 kont-ti
 koo-daus
@@ -1745,7 +1702,6 @@ kuk-sa
 kul-ho
 kul-ju
 kul-ku
-kul-li
 kul-ma
 kul-maus
 kul-ta
@@ -1765,7 +1721,6 @@ kun-to
 kuo-ha
 kuo-hu
 kuo-la
-kuo-lo
 kuo-mu
 kuo-na
 kuo-no
@@ -1794,7 +1749,6 @@ kur-juus
 kur-ki
 kur-laus
 kur-ra
-kur-va
 kus-kus
 kus-sa
 kus-tos
@@ -1824,9 +1778,7 @@ kuul-to
 kvart-si
 kvart-ti
 ky-ky
-ky-ly
 ky-lä
-ky-mi
 ky-nä
 ky-se
 ky-ty
@@ -1853,7 +1805,6 @@ kyn-tö
 kyp-si
 kyp-syys
 kyp-sä
-kyr-pä
 kyr-sä
 kys-sä
 kys-ta
@@ -1885,12 +1836,10 @@ kär-hi
 kär-hö
 kär-ki
 kär-käs
-kär-ri
 kär-ry
 kär-räys
 kär-sä
 käs-ky
-käs-nä
 kät-kyt
 kät-kö
 kät-sy
@@ -2002,7 +1951,6 @@ lak-kaus
 lak-ki
 lak-ko
 lak-mus
-lam-mas
 lam-pi
 lan-ka
 lan-kaus
@@ -2072,7 +2020,6 @@ leh-mus
 leh-mä
 leh-ti
 leh-to
-leh-vä
 lei-di
 lei-ja
 lei-ke
@@ -2080,7 +2027,6 @@ lei-li
 lei-ma
 lei-maus
 lei-mu
-lei-ni
 lei-pä
 lei-ri
 lei-vo
@@ -2135,7 +2081,6 @@ li-ti
 li-tium
 li-to
 li-tu
-li-ve
 lie-ju
 lie-ka
 lie-ko
@@ -2150,7 +2095,6 @@ lie-te
 lie-ve
 lie-vyys
 lie-vä
-lien-tää
 lies-ka
 lies-ma
 liet-so
@@ -2195,7 +2139,6 @@ link-ki
 link-ku
 lip-pa
 lip-pi
-lip-po
 lip-pu
 lip-saus
 lis-ko
@@ -2273,7 +2216,6 @@ lu-juus
 lu-ku
 lu-me
 lu-men
-lu-mi
 lu-mo
 lu-mous
 lu-pa
@@ -2388,7 +2330,6 @@ lät-ty
 lää-ke
 lää-ni
 lää-te
-lää-vä
 lös-si
 löy-dös
 löy-hyys
@@ -2410,7 +2351,6 @@ ma-ku
 ma-kuu
 ma-kuus
 ma-li
-ma-na
 ma-naus
 ma-ri
 ma-sai
@@ -2421,13 +2361,10 @@ ma-to
 maa-gi
 maa-laus
 maa-li
-maa-mies
 maa-mo
 maa-puu
-maa-rin
 maa-sai
 maa-ta
-maa-te
 maa-ton
 maa-työ
 maan-mies
@@ -2486,7 +2423,6 @@ man-na
 man-ner
 man-si
 man-to
-man-tu
 mar-ja
 mar-ket
 mar-su
@@ -2560,7 +2496,6 @@ mie-heys
 mie-huus
 mie-hyys
 mie-li
-mie-ro
 mie-te
 mie-to
 mie-tous
@@ -2779,7 +2714,6 @@ nal-le
 nal-li
 nap-pa
 nap-pi
-nap-po
 nap-saa
 nap-saus
 nar-raus
@@ -2808,7 +2742,6 @@ ne-ro
 ne-rous
 ne-va
 nei-ti
-nei-to
 neit-syt
 neit-syys
 nek-ku
@@ -2833,7 +2766,6 @@ ni-li
 ni-mi
 ni-su
 ni-sä
-ni-va
 ni-vel
 ni-vus
 nic-he
@@ -2944,7 +2876,6 @@ nyp-läys
 nyp-py
 nys-ty
 nyt-käys
-nyt-ten
 nyyh-ke
 nyyh-käys
 nä-et
@@ -3013,7 +2944,6 @@ oi-keus
 oi-nas
 oi-re
 oi-tis
-oi-va
 ok-ra
 ok-sa
 ol-ka
@@ -3027,7 +2957,6 @@ ont-to
 ont-tous
 oo-di
 op-pi
-or-hi
 or-ja
 or-juus
 or-po
@@ -3083,7 +3012,6 @@ paah-din
 paah-taa
 paah-to
 pah-ka
-pah-ki
 pah-na
 pah-vi
 pai-jaus
@@ -3141,7 +3069,6 @@ pan-na
 pan-nu
 pan-ta
 pank-ki
-pank-ko
 pant-taus
 pant-ti
 pap-pa
@@ -3232,7 +3159,6 @@ per-kaus
 per-keet
 per-kuu
 per-na
-per-se
 per-so
 pes-ki
 pes-taus
@@ -3293,7 +3219,6 @@ pii-na
 pii-ras
 pii-ri
 pii-ru
-pii-si
 piik-kaus
 piik-ki
 piik-ko
@@ -3315,7 +3240,6 @@ pik-ku
 pik-nik
 pil-ke
 pil-li
-pil-lu
 pil-vi
 pilk-ka
 pilk-ki
@@ -3360,7 +3284,6 @@ plyy-si
 plä-si
 po-ju
 po-la
-po-lo
 po-ni
 po-ra
 po-raus
@@ -3505,7 +3428,6 @@ pur-ku
 pur-naus
 pur-ra
 pur-se
-pur-si
 pur-so
 purk-ki
 pus-kin
@@ -3570,7 +3492,6 @@ päs-si
 pät-kä
 pät-si
 pää-hän
-pää-li
 pää-mies
 pää-ri
 pää-sy
@@ -3581,7 +3502,6 @@ pää-työ
 pää-tön
 pää-tös
 pääl-le
-pääl-li
 pääl-lys
 pääl-lä
 pääl-tä
@@ -3646,7 +3566,6 @@ raa-to
 raa-vas
 raa-vin
 raak-ki
-raak-ku
 raas-taa
 raas-te
 raas-tin
@@ -3693,7 +3612,6 @@ ran-king
 ran-ko
 ran-ne
 ran-ta
-ran-tu
 rank-ka
 rank-ki
 rans-ka
@@ -3793,7 +3711,6 @@ rie-naus
 rie-pu
 rie-sa
 rie-tas
-rie-vä
 rien-to
 rien-tää
 ries-ka
@@ -3898,7 +3815,6 @@ ru-no
 ru-nous
 ru-pi
 ru-saus
-ru-so
 ruis-kaus
 ruis-ke
 ruis-ku
@@ -4011,9 +3927,7 @@ sa-din
 sa-ha
 sa-haus
 sa-he
-sa-hi
 sa-huu
-sa-ju
 sa-ke
 sa-la
 sa-laus
@@ -4071,7 +3985,6 @@ sai-raus
 sai-ta
 sai-tuus
 sai-var
-saik-ka
 sak-ka
 sak-kaus
 sak-ko
@@ -4238,7 +4151,6 @@ sii-ka
 sii-li
 sii-lo
 sii-ma
-sii-mes
 sii-nä
 sii-pi
 sii-ra
@@ -4276,7 +4188,6 @@ sil-ta
 sil-ti
 silk-ka
 silk-ki
-silk-ko
 sin-ko
 sin-ne
 sing-laus
@@ -4388,7 +4299,6 @@ su-ka
 su-ku
 su-la
 su-laa
-su-lo
 su-lous
 su-ma
 su-meus
@@ -4398,8 +4308,6 @@ su-pi
 su-po
 su-ru
 su-si
-su-vi
-su-viyö
 suh-de
 suh-teen
 suih-kaus
@@ -4490,7 +4398,6 @@ syk-li
 syk-sy
 syl-ki
 syl-ky
-syn-keys
 syn-ti
 syn-ty
 synk-kyys
@@ -4628,7 +4535,6 @@ tai-tos
 tai-val
 tai-vas
 tai-ve
-tai-vo
 tait-se
 tait-taa
 tait-to
@@ -4680,7 +4586,6 @@ tar-vis
 tark-ka
 tark-kuus
 tas-ku
-tas-si
 tas-su
 tas-ting
 tat-ti
@@ -4733,7 +4638,6 @@ tem-paus
 tem-pe
 tem-po
 tem-pus
-ten-ho
 ten-nis
 tent-taus
 tent-ti
@@ -4798,7 +4702,6 @@ til-sit
 tilk-ka
 tilk-ku
 tin-ka
-tin-ki
 tip-pa
 tir-ri
 tis-kaus
@@ -4925,7 +4828,6 @@ tul-va
 tulk-ka
 tulk-kaus
 tulk-ki
-tump-pu
 tun-gos
 tun-ne
 tun-nus
@@ -4962,7 +4864,6 @@ tup-su
 tur-ha
 tur-huus
 tur-kis
-tur-ku
 tur-ma
 tur-naus
 tur-nee
@@ -4989,7 +4890,6 @@ tut-tu
 tut-tuus
 tuu-ba
 tuu-bi
-tuu-las
 tuu-li
 tuu-ma
 tuu-maus
@@ -4999,7 +4899,6 @@ tuul-la
 tuul-taa
 tuut-taus
 tuut-ti
-ty-kö
 ty-ly
 ty-lyys
 ty-päs
@@ -5143,16 +5042,13 @@ um-pu
 up-sis
 ur-du
 ur-heus
-ur-ho
 ur-ku
 ur-pu
 us-ko
 us-va
 uu-hi
 uu-ma
-uu-men
 uu-ni
-uu-ras
 uu-si
 uu-te
 uu-tuus
@@ -5202,7 +5098,6 @@ vaa-ka
 vaa-leus
 vaa-li
 vaa-ra
-vaa-rain
 vaa-ri
 vaa-rin
 vaa-si
@@ -5216,7 +5111,6 @@ vah-vuus
 vai-he
 vai-keus
 vai-mo
-vai-naa
 vai-nen
 vai-no
 vai-nu
@@ -5269,7 +5163,6 @@ van-tus
 vank-ka
 vank-kuus
 vant-ti
-vant-tu
 vap-pu
 vap-puyö
 var-hain
@@ -5319,7 +5212,6 @@ ve-din
 ve-dos
 ve-li
 ve-ne
-ve-nät
 ve-res
 ve-ri
 ve-ro
@@ -5339,7 +5231,6 @@ vei-keys
 vei-saus
 vei-su
 vei-suu
-veik-ka
 veik-kaus
 veik-ko
 veis-to
@@ -5385,7 +5276,6 @@ vi-ri
 vi-ro
 vi-rus
 vi-sa
-vi-su
 vi-ta
 vi-ti
 vie-dä
@@ -5433,7 +5323,6 @@ vii-sas
 vii-saus
 vii-si
 vii-su
-vii-ta
 vii-te
 vii-va
 vii-vain
@@ -5458,7 +5347,6 @@ vil-ke
 vil-la
 vil-leys
 vil-li
-vil-pas
 vilk-kaus
 vilk-ku
 vim-ma
@@ -5492,7 +5380,6 @@ vit-sa
 vit-sas
 vit-saus
 vit-si
-vit-tu
 viuh-ka
 viuh-ke
 viuh-ko
@@ -5564,7 +5451,6 @@ vält-tö
 vär-jäys
 vär-ve
 vär-väys
-väs-ky
 vää-rin
 vää-ryys
 vää-rä
