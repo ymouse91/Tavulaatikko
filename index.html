@@ -74,7 +74,7 @@
 
     /* Vieritettävä laatikko (ratkaisut) */
     .scroll-box {
-      max-height: 280px;
+      max-height: 200px;
       overflow-y: auto;
       margin: 10px auto;
       padding: 10px;
@@ -113,8 +113,9 @@
 
     /* Painikkeiden perustyyli */
     button#startBtn,
-    button#lopetaBtn,
-    button#apuaBtn {
+button#lopetaBtn,
+button#apuaBtn,
+button#okBtn {
       font-size: 16px;
       padding: 2px 4px;
       border-radius: 6px;
@@ -141,7 +142,26 @@
 </head>
 <body>
   <!-- Otsikko -->
-  <h1>Tavulaatikko</h1>
+
+<!-- Ohjeet piilotettuna, näkyy kun ohjenappia painetaan -->
+<dialog id="ohjeet" style="max-width: 600px; width: 90%; text-align: left;">
+  <h2>Ohjeet</h2>
+  <p><strong>Tavulaatikko</strong> on sanapeli, jossa tavoitteena on muodostaa suomenkielisiä kaksitavuisia sanoja.</p>
+  <ul>
+    <li>Valitse ensin pelin koko: 3×3 tai 4×4 ruudukko.</li>
+    <li>Paina <strong>Aloita peli</strong>. Tavut ilmestyvät ruudukkoon.</li>
+    <li>Valitse kaksi ruutua vuorotellen vaihtaaksesi niiden paikkaa.</li>
+    <li>Tavoitteena on, että jokainen vaakasuora ja pystysuora tavupareista muodostaa oikean sanan.</li>
+    <li>Vihreät ruudut ovat oikeassa paikassa, eivätkä enää vaihdu.</li>
+    <li><strong>Apua</strong>-painikkeella voit siirtää tai paljastaa yhden oikean tavun.</li>
+    <li><strong>Lopeta</strong>-painike näyttää oikean ratkaisun ja kaikki sanat.</li>
+  </ul>
+  <div style="text-align: center; margin-top: 20px;">
+    <button onclick="document.getElementById('ohjeet').close()" id="okBtn">OK</button>
+  </div>
+</dialog>
+
+  <h1><button onclick="document.getElementById('ohjeet').showModal()" style="font-size: 1.5em; font-weight: bold; border: none; background: none; cursor: pointer;">Tavulaatikko</button></h1>
 
   <!-- Pelin ohjauspainikkeet -->
   <div class="controls">
@@ -151,7 +171,7 @@
     <option value="4">4×4</option>
   </select>
   <button id="startBtn" onclick="startGame()" disabled>Aloita peli</button>
-  <button id="lopetaBtn" onclick="naytaRatkaisu()" style="display:none">Näytä ratkaisu</button>
+  <button id="lopetaBtn" onclick="naytaRatkaisu()" style="display:none">Lopeta – näytä ratkaisu</button>
   <button id="apuaBtn" onclick="annaApua()" style="display:none">Apua</button>
   </div>
 
@@ -548,7 +568,7 @@ function annaApua() {
 
   <!-- Alareunan versioteksti -->
   <footer style="position: fixed; bottom: 4px; right: 6px; font-size: 11px;">
-    Versio 1.0.6s
+    Versio 1.0.7s
   </footer>
 </body>
 </html>

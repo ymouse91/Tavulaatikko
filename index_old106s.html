@@ -74,7 +74,7 @@
 
     /* Vieritettävä laatikko (ratkaisut) */
     .scroll-box {
-      max-height: 200px;
+      max-height: 280px;
       overflow-y: auto;
       margin: 10px auto;
       padding: 10px;
@@ -134,7 +134,10 @@
       text-decoration: underline;
       color: #0077cc;
     }
-  </style>
+    
+  
+
+    </style>
 </head>
 <body>
   <!-- Otsikko -->
@@ -142,17 +145,17 @@
 
   <!-- Pelin ohjauspainikkeet -->
   <div class="controls">
-    <label for="size" id="sizeLabel">Valitse koko:</label>
-    <select id="size">
-      <option value="3" selected>3×3</option>
-      <option value="4">4×4</option>
-    </select>
-    <button id="startBtn" onclick="startGame()" disabled>Aloita peli</button>
-    <button id="lopetaBtn" onclick="naytaRatkaisu()" style="display:none">Lopeta – näytä ratkaisu</button>
-    <button id="apuaBtn" onclick="annaApua()" style="display:none">Apua</button>
+  <label for="size" id="sizeLabel">Valitse koko:</label>
+  <select id="size">
+    <option value="3" selected>3×3</option>
+    <option value="4">4×4</option>
+  </select>
+  <button id="startBtn" onclick="startGame()" disabled>Aloita peli</button>
+  <button id="lopetaBtn" onclick="naytaRatkaisu()" style="display:none">Näytä ratkaisu</button>
+  <button id="apuaBtn" onclick="annaApua()" style="display:none">Apua</button>
   </div>
 
-  <!-- Varsinainen ruudukko -->
+<!-- Varsinainen ruudukko -->
   <div id="grid" class="grid"></div>
 
   <!-- Voittoilmoitus -->
@@ -197,8 +200,8 @@
     const teksti = await response.text();                     // Lue tekstiksi
 
     // Suodata vain kelvolliset sanat (sisältävät - ja eivät ole kiellettyjä)
-    const rivit = teksti
-      .split(/\r?\n/)
+     const rivit = teksti.split(/\r?\n/)
+
       .filter(r => r.includes("-") && !kielletytSanat.has(r));
 
     sallitutSanat = new Set(rivit);                           // Tallenna Settiin
@@ -294,6 +297,24 @@ function startGame() {
   peliKaynnissa = true;
   valinta = null;
   render(); // Päivitetään näkymä
+
+  // Käynnistetään alkuanimaatio porrastetusti
+  const ruudut = document.querySelectorAll(".grid button");
+  ruudut.forEach((btn, i) => {
+    setTimeout(() => {
+      btn.style.transition = "transform 0.3s ease, background-color 0.3s ease";
+      btn.style.transform = "scale(1.15)";
+      if (!btn.classList.contains("correct")) {
+        btn.style.backgroundColor = "#cfc";
+      }
+      setTimeout(() => {
+        btn.style.transform = "scale(1)";
+        if (!btn.classList.contains("correct")) {
+          btn.style.backgroundColor = "#f0f0f0";
+        }
+      }, 300);
+    }, i * 30);
+  });
 }
 
 // Piirtää ruudukon näytölle nykytilanteen mukaan
@@ -337,7 +358,8 @@ function valitseTaiVaihda(i) {
     if (lukitut.has(i) || lukitut.has(valinta)) return;
     [nykyinen[i], nykyinen[valinta]] = [nykyinen[valinta], nykyinen[i]];
     valinta = null;
-    tarkistaVoitto(); // Tarkistetaan onko voitettu
+    render();
+    setTimeout(() => tarkistaVoitto(), 20); // Viivästetty tarkistus voiton animaation vuoksi
   }
   render();
 }
@@ -390,37 +412,52 @@ function tarkistaVoitto() {
     }
   }
 
-  // Voitto: palautetaan valinnat, näytetään sanat ja pisteet
-  const vaaka = [], pysty = [];
-  for (let r = 0; r < koko; r++) {
-    for (let c = 0; c < koko - 1; c++) {
-      vaaka.push(`${grid[r][c]}-${grid[r][c + 1]}`);
+  // Käynnistä voittoanimaatio (CSS-luokkaperusteinen)
+  const ruudut = document.querySelectorAll(".grid button");
+  ruudut.forEach((btn, i) => {
+    setTimeout(() => {
+      btn.style.transition = "transform 0.3s ease, background-color 0.3s ease";
+      btn.style.transform = "scale(1.15)";
+      btn.style.backgroundColor = "#dfffd0";
+      setTimeout(() => {
+        btn.style.transform = "scale(1)";
+      }, 300);
+    }, i * 30);
+  });
+
+  // Viive ennen voittonäytön esittämistä
+  setTimeout(() => {
+    const vaaka = [], pysty = [];
+    for (let r = 0; r < koko; r++) {
+      for (let c = 0; c < koko - 1; c++) {
+        vaaka.push(`${grid[r][c]}-${grid[r][c + 1]}`);
+      }
     }
-  }
-  for (let c = 0; c < koko; c++) {
-    for (let r = 0; r < koko - 1; r++) {
-      pysty.push(`${grid[r][c]}-${grid[r + 1][c]}`);
+    for (let c = 0; c < koko; c++) {
+      for (let r = 0; r < koko - 1; r++) {
+        pysty.push(`${grid[r][c]}-${grid[r + 1][c]}`);
+      }
     }
-  }
 
-  document.getElementById("size").style.display = "inline-block";
-  document.getElementById("sizeLabel").style.display = "inline-block";
-  document.getElementById("startBtn").style.display = "inline-block";
-  document.getElementById("lopetaBtn").style.display = "none";
-  document.getElementById("apuaBtn").style.display = "none";
-  peliKaynnissa = false;
+    document.getElementById("size").style.display = "inline-block";
+    document.getElementById("sizeLabel").style.display = "inline-block";
+    document.getElementById("startBtn").style.display = "inline-block";
+    document.getElementById("lopetaBtn").style.display = "none";
+    document.getElementById("apuaBtn").style.display = "none";
+    peliKaynnissa = false;
 
-  let paljastamattomia = nykyinen.length - korostukset.size;
-  let maxPisteet = koko === 3 ? 10 : 20;
-  let pisteet = 0;
-  if (paljastamattomia >= 3) {
-    pisteet = maxPisteet - (2 * apuVaihtoja) - (1 * apuPaljastuksia);
-    if (pisteet < 0) pisteet = 0;
-  } else {
-    pisteet = 0;
-  }
+    let paljastamattomia = nykyinen.length - korostukset.size;
+    let maxPisteet = koko === 3 ? 10 : 20;
+    let pisteet = 0;
+    if (paljastamattomia >= 3) {
+      pisteet = maxPisteet - (2 * apuVaihtoja) - (1 * apuPaljastuksia);
+      if (pisteet < 0) pisteet = 0;
+    } else {
+      pisteet = 0;
+    }
 
-  naytaSanat(vaaka, pysty, `Voitit! Pisteesi: <b>${pisteet}</b>`);
+    naytaSanat(vaaka, pysty, `Voitit! Pisteesi: <b>${pisteet}</b>`);
+  }, koko * koko * 30 + 500);
 }
 
 // Näyttää oikean ruudukon ja sen muodostamat sanat
@@ -506,8 +543,8 @@ function annaApua() {
   }
 
   alert("Ei löytynyt uutta oikeaa tavua paljastettavaksi.");
-  }
-</script>
+}
+  </script>
 
   <!-- Alareunan versioteksti -->
   <footer style="position: fixed; bottom: 4px; right: 6px; font-size: 11px;">
