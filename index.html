@@ -146,22 +146,22 @@ button#okBtn {
 <!-- Ohjeet piilotettuna, näkyy kun ohjenappia painetaan -->
 <dialog id="ohjeet" style="max-width: 600px; width: 90%; text-align: left;">
   <h2>Ohjeet</h2>
-  <p><strong>Tavulaatikko</strong> on sanapeli, jossa tavoitteena on muodostaa suomenkielisiä kaksitavuisia sanoja.</p>
+  <p><strong>Tavukko</strong> on sanapeli, jossa tavoitteena on muodostaa täysi ruudukko suomenkielisiä kaksitavuisia sanoja.</p>
   <ul>
-    <li>Valitse ensin pelin koko: 3×3 tai 4×4 ruudukko.</li>
+    <li>Valitse ensin ruudukon koko: 3×3 tai 4×4.</li>
     <li>Paina <strong>Aloita peli</strong>. Tavut ilmestyvät ruudukkoon.</li>
     <li>Valitse kaksi ruutua vuorotellen vaihtaaksesi niiden paikkaa.</li>
-    <li>Tavoitteena on, että jokainen vaakasuora ja pystysuora tavupareista muodostaa oikean sanan.</li>
-    <li>Vihreät ruudut ovat oikeassa paikassa, eivätkä enää vaihdu.</li>
-    <li><strong>Apua</strong>-painikkeella voit siirtää tai paljastaa yhden oikean tavun.</li>
-    <li><strong>Lopeta</strong>-painike näyttää oikean ratkaisun ja kaikki sanat.</li>
+    <li>Tavoitteena on, että jokainen ruudukossa oleva vaakasuora ja pystysuora tavupari muodostaa oikean sanan.</li>
+    <li>Vihreät ruudut ovat oikeassa paikassa, eikä niitä voi enää siirtää.</li>
+    <li><strong>Apua</strong>-painikkeella voit paljastaa yhden oikealla paikalla olevan tavun tai siirtää valitun tavun oikealle paikalle.</li>
+    <li><strong>Lopeta</strong>-painike näyttää oikean ratkaisun ja kaikki sanat. Sanojen selityksen löydät klikkaamalla sanaa.</li>
   </ul>
   <div style="text-align: center; margin-top: 20px;">
     <button onclick="document.getElementById('ohjeet').close()" id="okBtn">OK</button>
   </div>
 </dialog>
 
-  <h1><button onclick="document.getElementById('ohjeet').showModal()" style="font-size: 1.5em; font-weight: bold; border: none; background: none; cursor: pointer;">Tavulaatikko</button></h1>
+  <h1><button onclick="document.getElementById('ohjeet').showModal()" style="font-size: 1.5em; font-weight: bold; border: none; background: none; cursor: pointer;">Tavukko</button></h1>
 
   <!-- Pelin ohjauspainikkeet -->
   <div class="controls">
