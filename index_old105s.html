@@ -148,19 +148,48 @@
     let tavulista = [];
     let vilautusIndeksi = null;
 
-    async function lataaSanat() {
-      const response = await fetch("sallitut_sanat.txt");
-      const teksti = await response.text();
-      const rivit = teksti.split(/\r?\n/).filter(r => r.includes("-"));
-      sallitutSanat = new Set(rivit);
+const kielletytSanat = new Set([
+  "per-se",
+  "a-nus",
+  "vit-tu",
+  "kyr-pä",
+  "pimp-pi",
+  "tis-si",
+  "ku-si",
+  "kak-ka",
+  "pas-ka",
+  "ho-mo",
+  "les-bo",
+  "sek-si",
+  "nän-ni",
+  "ka-lu",
+  "pil-lu"
+]);
 
-      const kaikkiTavut = rivit.flatMap(r => r.split("-"));
-      const laskuri = {};
-      kaikkiTavut.forEach(t => laskuri[t] = (laskuri[t] || 0) + 1);
-      tavulista = Object.keys(laskuri);
+async function lataaSanat() {
+  const response = await fetch("sallitut_sanat.txt");
+  const teksti = await response.text();
 
-      startBtn.disabled = false;
-    }
+  // Suodata rivit: vain "-"-merkin sisältävät ja ei-kielletyt
+  const rivit = teksti
+    .split(/\r?\n/)
+    .filter(r => r.includes("-") && !kielletytSanat.has(r));
+
+  // Tallenna sallitut sanat settiin
+  sallitutSanat = new Set(rivit);
+
+  // Laske tavujen esiintymät ja muodosta tavulista
+  const kaikkiTavut = rivit.flatMap(r => r.split("-"));
+  const laskuri = {};
+  kaikkiTavut.forEach(t => {
+    laskuri[t] = (laskuri[t] || 0) + 1;
+  });
+  tavulista = Object.keys(laskuri);
+
+  // Aktivoi aloituspainike
+  startBtn.disabled = false;
+}
+
 
     function startGame() {
       document.getElementById("size").style.display = "none";
@@ -168,6 +197,8 @@
       document.getElementById("startBtn").style.display = "none";
       document.getElementById("lopetaBtn").style.display = "inline-block";
       document.getElementById("apuaBtn").style.display = "inline-block";
+apuVaihtoja = 0;
+apuPaljastuksia = 0;
 
       statusElem.innerHTML = "";
       if (sallitutSanat.size === 0) {
@@ -344,7 +375,20 @@ nykyinen = sekoitetut;
       document.getElementById("lopetaBtn").style.display = "none";
       document.getElementById("apuaBtn").style.display = "none";
       peliKaynnissa = false;
-      naytaSanat(vaaka, pysty, "Voitit!");
+let paljastamattomia = nykyinen.length - korostukset.size;
+
+let maxPisteet = koko === 3 ? 10 : 20;
+let pisteet = 0;
+
+if (paljastamattomia >= 3) {
+  pisteet = maxPisteet - (2 * apuVaihtoja) - (1 * apuPaljastuksia);
+  if (pisteet < 0) pisteet = 0;
+} else {
+  pisteet = 0; // Liian vähän ruutuja jäljellä → ei pisteitä
+}
+
+naytaSanat(vaaka, pysty, `Voitit! Pisteesi: <b>${pisteet}</b>`);
+
     }
 
     function naytaRatkaisu() {
@@ -388,11 +432,13 @@ nykyinen = sekoitetut;
           // Tavu on jo oikeassa paikassa → lukitaan ja korostetaan
           lukitut.add(i);
           korostukset.add(i);
+		  apuVaihtoja++
         } else {
           // Tavu on väärässä paikassa → vaihdetaan oikealle paikalleen
           [nykyinen[i], nykyinen[valinta]] = [nykyinen[valinta], nykyinen[i]];
           lukitut.add(i);
           korostukset.add(i);
+		  apuVaihtoja++
         }
         valinta = null;
         render();
@@ -408,6 +454,7 @@ nykyinen = sekoitetut;
     if (nykyinen[i] === ratkaisu[r][c] && !korostukset.has(i)) {
       lukitut.add(i);
       korostukset.add(i);
+	  apuPaljastuksia++
       valinta = null;
       render();
       return;
@@ -437,7 +484,7 @@ nykyinen = sekoitetut;
   </script>
 
   <footer style="position: fixed; bottom: 4px; right: 6px; font-size: 11px;">
-    Versio 1.0.4s
+    Versio 1.0.5s
   </footer>
 </body>
 </html>
