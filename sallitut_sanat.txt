@@ -15,7 +15,6 @@ a-mok
 a-ne
 a-ni
 a-nis
-a-nus
 a-pe
 a-peus
 a-pu
@@ -613,7 +612,6 @@ ho-ki
 ho-ku
 ho-me
 ho-ming
-ho-mo
 ho-mous
 ho-sa
 ho-vi
@@ -2042,7 +2040,6 @@ len-tää
 lep-peys
 lep-pä
 lep-ra
-les-bo
 les-keys
 les-ki
 les-ti
@@ -4049,7 +4046,6 @@ seis-tä
 seit-sen
 seit-ti
 sek-ki
-sek-si
 sek-ti
 sel-ja
 sel-keys
