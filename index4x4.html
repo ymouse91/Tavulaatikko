@@ -1,18 +1,31 @@
 <!DOCTYPE html>
 <html lang="fi">
 <head>
+  <!--
+    Tavupeli "Tavulaatikko"
+    ------------------------
+    Tämä on selainpohjainen sanapeli, jossa pelaajan tehtävänä on muodostaa 3x3 tai 4x4 ruudukkoon sellainen tavuista koostuva asettelu,
+    että jokainen vaaka- ja pystytavupari muodostaa oikean suomenkielisen kaksitavuisen sanan.
+
+    Ohjelma lataa sanalistan, suodattaa kielletyt sanat, muodostaa kelvollisen ruudukon,
+    ja pelaaja siirtelee tavuja nappeja painamalla. Apupainikkeella voi pyytää vihjeen.
+  -->
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#cfc">
   <title>Tavupeli</title>
   <link rel="manifest" href="manifest.json">
+
   <style>
+    /* Yleiset tyylit */
     body {
       font-family: sans-serif;
       text-align: center;
       margin: 20px;
     }
 
+    /* Ruudukko-asettelu */
     .grid {
       display: grid;
       gap: 5px;
@@ -20,6 +33,7 @@
       margin: 20px auto;
     }
 
+    /* Ruudukon napit */
     .grid button {
       display: flex;
       align-items: center;
@@ -36,24 +50,29 @@
       font-weight: bold;
     }
 
+    /* Oikein asetetut tavut vihreäksi */
     .grid button.correct {
       background-color: #cfc;
     }
 
+    /* Väärän valinnan välähdys punaisena */
     .grid button.flash-error {
       background-color: #fcc !important;
     }
 
+    /* Pelin kontrollipainikkeet */
     .controls {
       margin-bottom: 15px;
     }
 
+    /* Voittotekstin ulkoasu */
     .won {
       font-weight: bold;
       color: green;
       font-size: 1.4em;
     }
 
+    /* Vieritettävä laatikko (ratkaisut) */
     .scroll-box {
       max-height: 200px;
       overflow-y: auto;
@@ -68,16 +87,14 @@
       font-size: 18px;
     }
 
-    button {
-      font-size: 16px;
-      padding: 4px 6px;
-      border-radius: 6px;
-      border: 1px solid #888;
-      background-color: #f0f0f0;
-      cursor: pointer;
-      margin: 4px;
+    /* Valintalistan ja napin koko */
+    #sizeLabel,
+    #size {
+      font-size: 18px;
+      font-weight: bold;
     }
 
+    /* Hover-tyylit */
     button:hover {
       background-color: #ddd;
     }
@@ -94,10 +111,21 @@
       background-color: #fffbcc;
     }
 
-    #ohjeBtn:hover {
-      background-color: #ffffcc;
+    /* Painikkeiden perustyyli */
+    button#startBtn,
+button#lopetaBtn,
+button#apuaBtn,
+button#okBtn {
+      font-size: 16px;
+      padding: 4px 6px;
+      border-radius: 6px;
+      border: 1px solid #888;
+      background-color: #f0f0f0;
+      cursor: pointer;
+      margin: 4px;
     }
 
+    /* Linkkien tyyli vierityslaatikossa */
     .scroll-box a {
       text-decoration: none;
       color: #000;
@@ -107,16 +135,20 @@
       text-decoration: underline;
       color: #0077cc;
     }
-  </style>
+    
+  
+
+    </style>
 </head>
 <body>
+  <!-- Otsikko -->
 
-<!-- Ohjeet -->
+<!-- Ohjeet piilotettuna, näkyy kun ohjenappia painetaan -->
 <dialog id="ohjeet" style="max-width: 600px; width: 90%; text-align: left;">
   <h2>Ohjeet</h2>
   <p><strong>Tavukko</strong> on sanapeli, jossa tavoitteena on muodostaa täysi ruudukko suomenkielisiä kaksitavuisia sanoja.</p>
   <ul>
-    <li>Tavuruudukko on 3×3-kokoinen.</li>
+    <li>Valitse ensin ruudukon koko: 3×3 tai 4×4.</li>
     <li>Paina <strong>Aloita peli</strong>. Tavut ilmestyvät ruudukkoon.</li>
     <li>Valitse kaksi ruutua vuorotellen vaihtaaksesi niiden paikkaa.</li>
     <li>Tavoitteena on, että jokainen ruudukossa oleva <strong>tavupari</strong> vasemmalta oikealle ja ylhäältä alas muodostaa oikean sanan.</li>
@@ -129,57 +161,83 @@
   </div>
 </dialog>
 
-<h1><button onclick="document.getElementById('ohjeet').showModal()" style="font-size: 1.5em; font-weight: bold; border: none; background: none; cursor: pointer;">Tavukko</button></h1>
+  <h1><button onclick="document.getElementById('ohjeet').showModal()" style="font-size: 1.5em; font-weight: bold; border: none; background: none; cursor: pointer;">Tavukko</button></h1>
 
-<div class="controls">
-  <button id="ohjeBtn" onclick="document.getElementById('ohjeet').showModal()">Ohjeet</button>
+  <!-- Pelin ohjauspainikkeet -->
+  <div class="controls">
+  <label for="size" id="sizeLabel">Ruudukko:</label>
+  <select id="size">
+    <option value="3" selected>3×3</option>
+    <option value="4">4×4</option>
+  </select>
   <button id="startBtn" onclick="startGame()" disabled>Aloita peli</button>
+  <button id="lopetaBtn" onclick="naytaRatkaisu()" style="display:none">Lopeta</button>
   <button id="apuaBtn" onclick="annaApua()" style="display:none">Apua</button>
-    <button id="lopetaBtn" onclick="naytaRatkaisu()" style="display:none">Lopeta</button>
-</div>
+  </div>
 
-<div id="grid" class="grid"></div>
-<div id="status" class="won"></div>
+<!-- Varsinainen ruudukko -->
+  <div id="grid" class="grid"></div>
 
-<!-- Pelin JavaScript -->
-<script>
-  const gridElem = document.getElementById("grid");
-  const statusElem = document.getElementById("status");
-  const startBtn = document.getElementById("startBtn");
-  const lopetaBtn = document.getElementById("lopetaBtn");
+  <!-- Voittoilmoitus -->
+  <div id="status" class="won"></div>
 
-  let koko = 3;
-  let ratkaisu = [];
-  let nykyinen = [];
-  let valinta = null;
-  let peliKaynnissa = true;
-  let korostukset = new Set();
-  let lukitut = new Set();
-  let sallitutSanat = new Set();
-  let tavulista = [];
-  let vilautusIndeksi = null;
-  let apuVaihtoja = 0;
-  let apuPaljastuksia = 0;
+  <!-- Pelin JavaScript logiikka tulee tähän -->
+  <script>
+  // -----------------------------
+  // TÄMÄ ON KOKO PELIN TOIMINNALLINEN LOGIIKKA
+  // -----------------------------
 
+  // Haetaan tarvittavat HTML-elementit talteen muuttujiksi
+  const gridElem = document.getElementById("grid");        // Ruudukkoalue
+  const statusElem = document.getElementById("status");    // Voittotekstialue
+  const startBtn = document.getElementById("startBtn");    // Aloituspainike
+  const lopetaBtn = document.getElementById("lopetaBtn");  // Ratkaisunäyttöpainike
+
+  // Pelitilannetta kuvaavat muuttujat
+  let koko = 3;                     // Ruudukon koko: 3x3 tai 4x4
+  let ratkaisu = [];                // Oikea ruudukko (sisältää ratkaisun)
+  let nykyinen = [];                // Pelaajan nykyinen ruudukko
+  let valinta = null;               // Pelaajan valitsema ruutu (indeksi)
+  let peliKaynnissa = true;         // Onko peli vielä kesken
+  let korostukset = new Set();      // Korostetut (vihreät) ruudut
+  let lukitut = new Set();          // Lukitut ruudut (ei voi vaihtaa)
+  let sallitutSanat = new Set();    // Kaksitavuiset sallitut sanat
+  let tavulista = [];               // Lista käytettävissä olevista tavuista
+  let vilautusIndeksi = null;       // Väliaikainen korostus väärästä painalluksesta
+  let apuVaihtoja = 0;              // Montako kertaa apupainike vaihtoi tavun
+  let apuPaljastuksia = 0;          // Montako oikeaa tavua apu paljasti
+
+  // Lista ei-toivotuista (kielletyistä) sanoista, joita ei hyväksytä peliin
   const kielletytSanat = new Set([
     "per-se", "a-nus", "vit-tu", "kyr-pä", "pimp-pi", "tis-si",
     "ku-si", "kak-ka", "pas-ka", "ho-mo", "les-bo", "sek-si",
     "nän-ni", "ka-lu", "pil-lu"
   ]);
 
+  // Lataa ja esikäsittelee sanalistan tekstimuodosta
   async function lataaSanat() {
-    const response = await fetch("sallitut_sanat.txt");
-    const teksti = await response.text();
-    const rivit = teksti.split(/\r?\n/).filter(r => r.includes("-") && !kielletytSanat.has(r));
-    sallitutSanat = new Set(rivit);
+    const response = await fetch("sallitut_sanat.txt");      // Lataa tiedosto
+    const teksti = await response.text();                     // Lue tekstiksi
 
+    // Suodata vain kelvolliset sanat (sisältävät - ja eivät ole kiellettyjä)
+     const rivit = teksti.split(/\r?\n/)
+
+      .filter(r => r.includes("-") && !kielletytSanat.has(r));
+
+    sallitutSanat = new Set(rivit);                           // Tallenna Settiin
+
+    // Etsi kaikki tavut ja laske niiden yleisyys
     const kaikkiTavut = rivit.flatMap(r => r.split("-"));
     const laskuri = {};
-    kaikkiTavut.forEach(t => { laskuri[t] = (laskuri[t] || 0) + 1; });
-    tavulista = Object.keys(laskuri);
-    startBtn.disabled = false;
+    kaikkiTavut.forEach(t => {
+      laskuri[t] = (laskuri[t] || 0) + 1;
+    });
+    tavulista = Object.keys(laskuri);                         // Kaikki tavut listana
+
+    startBtn.disabled = false;                                // Aktivoi start-nappi
   }
 
+  // Fisher-Yates satunnaistusalgoritmi
   function shuffle(arr) {
     let a = [...arr];
     for (let i = a.length - 1; i > 0; i--) {
@@ -189,17 +247,21 @@
     return a;
   }
 
+  // Rekisteröi selaimen Service Worker, jotta peli toimii myös offline-tilassa
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js')
       .then(() => console.log('Service Worker rekisteröity'))
       .catch(err => console.error('SW virhe', err));
   }
 
+  // Käynnistä pelin esilataus (sanalista yms.) heti sivun ladattua
   lataaSanat().then(() => console.log("Sanalista ladattu."));
-
 
   // Aloittaa uuden pelin ja valmistelee ruudukon
 function startGame() {
+  // Piilotetaan valinnat ja näytetään pelipainikkeet
+  document.getElementById("size").style.display = "none";
+  document.getElementById("sizeLabel").style.display = "none";
   document.getElementById("startBtn").style.display = "none";
   document.getElementById("lopetaBtn").style.display = "inline-block";
   document.getElementById("apuaBtn").style.display = "inline-block";
@@ -213,16 +275,35 @@ function startGame() {
     return;
   }
 
-  koko = 3;
-  ratkaisu = generoiKelvollinenRuudukko(koko);
-  const tavut = ratkaisu.flat();
+  koko = parseInt(document.getElementById("size").value); // 3 tai 4
+  ratkaisu = generoiKelvollinenRuudukko(koko);             // Luodaan ratkaisu
+
+  const tavut = ratkaisu.flat();   // Otetaan tavut talteen taulukoksi
   korostukset.clear();
   lukitut.clear();
   let oikeatIndeksit = [];
 
+  // Valitaan 1 tai 2 tavua, jotka asetetaan heti oikeaan paikkaansa
   const valitseIndeksi = () => Math.floor(Math.random() * tavut.length);
   const eka = valitseIndeksi();
   oikeatIndeksit.push(eka);
+
+  if (koko === 4) {
+    const r1 = Math.floor(eka / koko);
+    const c1 = eka % koko;
+    const kelvolliset = [];
+    for (let i = 0; i < tavut.length; i++) {
+      const r2 = Math.floor(i / koko);
+      const c2 = i % koko;
+      if (r2 !== r1 && c2 !== c1) kelvolliset.push(i);
+    }
+    if (kelvolliset.length > 0) {
+      const toinen = kelvolliset[Math.floor(Math.random() * kelvolliset.length)];
+      oikeatIndeksit.push(toinen);
+    }
+  }
+
+  // Asetetaan oikeat tavut paikoilleen, muut sekoitetaan
   const tavutIlman = tavut.filter((_, i) => !oikeatIndeksit.includes(i));
   const sekoitetut = shuffle(tavutIlman);
 
@@ -235,8 +316,9 @@ function startGame() {
   nykyinen = sekoitetut;
   peliKaynnissa = true;
   valinta = null;
-  render();
+  render(); // Päivitetään näkymä
 
+  // Käynnistetään alkuanimaatio porrastetusti
   const ruudut = document.querySelectorAll(".grid button");
   ruudut.forEach((btn, i) => {
     setTimeout(() => {
@@ -400,8 +482,8 @@ function tarkistaVoitto() {
 
 // Näyttää oikean ruudukon ja sen muodostamat sanat
 function naytaRatkaisu() {
-//  document.getElementById("size").style.display = "inline-block";
-//  document.getElementById("sizeLabel").style.display = "inline-block";
+  document.getElementById("size").style.display = "inline-block";
+  document.getElementById("sizeLabel").style.display = "inline-block";
   document.getElementById("startBtn").style.display = "inline-block";
   document.getElementById("lopetaBtn").style.display = "none";
   document.getElementById("apuaBtn").style.display = "none";
@@ -486,7 +568,7 @@ function annaApua() {
 
   <!-- Alareunan versioteksti -->
   <footer style="position: fixed; bottom: 4px; right: 6px; font-size: 11px;">
-    Versio 1.1.0s
+    Versio 1.0.7s
   </footer>
 </body>
 </html>
