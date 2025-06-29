@@ -162,14 +162,10 @@
   let apuPaljastuksia = 0;
 
   const kielletytSanat = new Set([
-    "ka-lu"
+    "per-se", "a-nus", "vit-tu", "kyr-pä", "pimp-pi", "tis-si",
+    "ku-si", "kak-ka", "pas-ka", "ho-mo", "les-bo", "sek-si",
+    "nän-ni", "ka-lu", "pil-lu"
   ]);
-  
-const alkuruudukko = [
-  ["ta", "vuk", "ko"],
-  ["vuk", "ko", "ta"],
-  ["ko", "ta", "vuk"]
-];
 
   async function lataaSanat() {
     const response = await fetch("sallitut_sanat.txt");
@@ -199,12 +195,7 @@ const alkuruudukko = [
       .catch(err => console.error('SW virhe', err));
   }
 
-  //lataaSanat().then(() => console.log("Sanalista ladattu."));
-lataaSanat().then(() => {
-  console.log("Sanalista ladattu.");
-  startBtn.style.display = "none";  // piiloon alkuun
-  naytaAlkuanimaatio();
-});
+  lataaSanat().then(() => console.log("Sanalista ladattu."));
 
 
   // Aloittaa uuden pelin ja valmistelee ruudukon
@@ -491,43 +482,6 @@ function annaApua() {
 
   alert("Ei löytynyt uutta oikeaa tavua paljastettavaksi.");
 }
-
-function naytaAlkuanimaatio() {
-  koko = 3;
-  gridElem.style.gridTemplateColumns = `repeat(${koko}, 60px)`;
-  gridElem.innerHTML = "";
-
-  const nappulat = [];
-
-  for (let r = 0; r < koko; r++) {
-    for (let c = 0; c < koko; c++) {
-      const btn = document.createElement("button");
-      btn.textContent = "";
-      btn.disabled = true;
-      gridElem.appendChild(btn);
-      nappulat.push(btn);
-    }
-  }
-
-  // Asetetaan tavut 1 kerrallaan rivi kerrallaan
-  let viive = 0;
-  for (let r = 0; r < koko; r++) {
-    for (let c = 0; c < koko; c++) {
-      const indeksi = r * koko + c;
-      setTimeout(() => {
-        nappulat[indeksi].textContent = alkuruudukko[r][c];
-        nappulat[indeksi].style.backgroundColor = "#eee";
-      }, viive);
-      viive += 200;
-    }
-  }
-
-  // Näytetään Aloita-painike vasta lopuksi
-  setTimeout(() => {
-    startBtn.style.display = "inline-block";
-  }, viive + 500);
-}
-
   </script>
 
   <!-- Alareunan versioteksti -->
