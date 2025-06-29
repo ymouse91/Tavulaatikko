@@ -1264,9 +1264,6 @@ kau-nis
 kau-ra
 kau-ris
 kau-si
-kauim-ma
-kauim-mas
-kauim-min
 kaup-pa
 kaut-su
 kaut-ta
@@ -2778,8 +2775,6 @@ nih-ti
 nii-aus
 nii-ni
 nii-si
-niin -kuin
-niin -päin
 niit-taus
 niit-ti
 niit-to
@@ -3668,10 +3663,6 @@ rei-vaus
 rei-vi
 rei-vit
 reit-ti
-rei’i-käs
-rei’i-te
-rei’i-tin
-rei’i-tys
 rek-ka
 rek-ki
 remp-seys
@@ -4943,14 +4934,8 @@ työ-läys
 työ-maa
 työ-mies
 työ-tön
-työa-la
-työa-pu
-työa-se
-työa-su
 työn-tää
 työn-tö
-työo-lot
-työo-suus
 työs-tää
 työs-tö
 tä-hän
