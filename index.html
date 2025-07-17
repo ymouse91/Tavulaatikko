@@ -132,6 +132,13 @@ html, body {
   overflow-x: hidden;
 }
 
+@media (min-width: 1024px) and (orientation: landscape) {
+  #otsikkoBtn {
+    margin-top: -20px;
+    display: inline-block;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -154,7 +161,11 @@ html, body {
   </div>
 </dialog>
 
-<h1><button onclick="document.getElementById('ohjeet').showModal()" style="font-size: 1.5em; font-weight: bold; border: none; background: none; cursor: pointer;">Tavukko</button></h1>
+<h1>
+  <button id="otsikkoBtn" onclick="document.getElementById('ohjeet').showModal()" style="font-size: 1.5em; font-weight: bold; border: none; background: none; cursor: pointer;">
+    Tavukko
+  </button>
+</h1>
 
 <div class="controls">
   <button id="ohjeBtn" onclick="document.getElementById('ohjeet').showModal()">Ohjeet</button>
