@@ -7,18 +7,19 @@
   <title>Tavukko</title>
   <link rel="manifest" href="manifest.json">
   <style>
-body {
-  font-family: sans-serif;
-  text-align: center;
-  margin: 20px;
-  min-height: 100vh;
-  overflow-x: hidden;
-  transform: scale(1);
-  transform-origin: top center;
-}
-h1 {
-  margin-bottom: 0px; /* Voit kokeilla arvoa 4px tai 0px jos haluat vielä tiiviimmän */
-}
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin: 20px;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transform: scale(1);
+      transform-origin: top center;
+    }
+
+    h1 {
+      margin-bottom: 0px;
+    }
 
     .grid {
       display: grid;
@@ -51,13 +52,13 @@ h1 {
       background-color: #fcc !important;
     }
 
-.controls {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 10px;
-}
+    .controls {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
 
     .won {
       font-weight: bold;
@@ -73,7 +74,7 @@ h1 {
       border: 1px solid #ccc;
       width: 80%;
       min-width: 180px;
-      max-width: 400px;
+      max-width: 280px;
       background: #f9f9f9;
       text-align: left;
       font-size: 14px;
@@ -81,8 +82,6 @@ h1 {
 
     button {
       font-size: 16px;
-
-
       padding: 6px 12px;
       border-radius: 24px;
       border: 1px solid #888;
@@ -120,44 +119,38 @@ h1 {
       text-decoration: underline;
       color: #0077cc;
     }
-	/* Skaalaus oletuksena normaali (iPhone, pieni näyttö) */
 
+    /* Skaalaus suuremmille näytöille */
+    @media (min-width: 1024px) and (orientation: landscape) {
+      body {
+        transform: scale(1.3);
+      }
 
-@media (min-width: 1024px) and (orientation: landscape) {
-  body {
-    transform: scale(1.3);
-  }
-}
+      #otsikkoBtn {
+        margin-top: -20px;
+        display: inline-block;
+      }
+    }
 
-
-/* Estetään vieritys skaalauksen vuoksi */
-html, body {
-  overflow-x: hidden;
-}
-
-@media (min-width: 1024px) and (orientation: landscape) {
-  #otsikkoBtn {
-    margin-top: -20px;
-    display: inline-block;
-  }
-}
-
+    html, body {
+      overflow-x: hidden;
+    }
   </style>
 </head>
 <body>
 
-<!-- Ohjeet -->
+<!-- Ohjeet-dialogi ja otsikkonappi -->
 <dialog id="ohjeet" style="max-width: 600px; width: 90%; text-align: left;">
   <h2>Ohjeet</h2>
   <p><strong>Tavukko</strong> on sanapeli, jossa tavoitteena on muodostaa täysi ruudukko suomenkielisiä <b>kaksitavuisia sanoja</b>.</p>
   <ul>
-    <li>Tavuruudukko on 3×3-kokoinen.</li>
-    <li>Paina <strong>Aloita peli</strong>. Tavut ilmestyvät ruudukkoon.</li>
+    <li>Ruudukko on 3×3-kokoinen.</li>
+    <li>Paina <strong>Aloita peli</strong>, niin tavut ilmestyvät ruudukkoon.</li>
     <li>Valitse kaksi ruutua vuorotellen vaihtaaksesi niiden paikkaa.</li>
-    <li>Tavoitteena on, että jokainen ruudukossa oleva <strong>tavupari</strong> vasemmalta oikealle ja ylhäältä alas muodostaa oikean sanan.</li>
-    <li>Vihreät ruudut ovat oikeassa paikassa, eikä niitä voi siirtää.</li>
-    <li><strong>Apua</strong>-painikkeella voit paljastaa yhden oikealla paikalla olevan tavun tai siirtää valitun tavun oikealle paikalle.</li>
-    <li><strong>Lopeta</strong>-painike näyttää oikean ratkaisun ja kaikki sanat. Sanojen selityksen löydät klikkaamalla sanaa.</li>
+    <li>Tavoitteena on, että kaikki vaakaan ja pystyyn muodostuvat tavuparit ovat oikeita sanoja.</li>
+    <li>Vihreät ruudut ovat oikeassa paikassa eivätkä ole enää siirrettävissä.</li>
+    <li><strong>Apua</strong> voi paljastaa tai siirtää yhden oikean tavun.</li>
+    <li><strong>Lopeta</strong> näyttää oikean ratkaisun ja linkit sanojen selityksiin.</li>
   </ul>
   <p>Versio 1.2s</p>
   <div style="text-align: center; margin-top: 20px;">
@@ -171,17 +164,39 @@ html, body {
   </button>
 </h1>
 
+<!-- Ohjauspainikkeet -->
 <div class="controls">
   <button id="ohjeBtn" onclick="document.getElementById('ohjeet').showModal()">Ohjeet</button>
   <button id="startBtn" onclick="startGame()" disabled>Aloita peli</button>
   <button id="apuaBtn" onclick="annaApua()" style="display:none">Apua</button>
-    <button id="lopetaBtn" onclick="naytaRatkaisu()" style="display:none">Lopeta</button>
+  <button id="lopetaBtn" onclick="naytaRatkaisu()" style="display:none">Lopeta</button>
 </div>
 
+<!-- Ruudukko ja tila-alue -->
 <div id="grid" class="grid"></div>
 <div id="status" class="won"></div>
 
-<!-- Pelin JavaScript -->
+<button id="install-button" style="
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  padding: 10px 16px;
+  font-size: 16px;
+  border-radius: 8px;
+  background-color: #0078D4;
+  color: white;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  cursor: pointer;
+">
+  📥 Asenna Tavukko
+</button>
+
+
+<!-- JavaScript-koodi alkaa -->
+
 <script>
   const gridElem = document.getElementById("grid");
   const statusElem = document.getElementById("status");
@@ -571,6 +586,34 @@ function naytaAlkuanimaatio() {
     startBtn.style.display = "inline-block";
   }, viive + 500);
 }
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  console.log('beforeinstallprompt saatiin');
+  e.preventDefault();
+  deferredPrompt = e;
+
+  const installBtn = document.getElementById('install-button');
+  installBtn.style.display = 'inline-block';
+
+  installBtn.addEventListener('click', () => {
+    installBtn.style.display = 'none';
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('Käyttäjä hyväksyi asennuksen');
+      } else {
+        console.log('Käyttäjä hylkäsi asennuksen');
+      }
+      deferredPrompt = null;
+    });
+  });
+});
+
+window.addEventListener('appinstalled', () => {
+  console.log('Sovellus asennettiin!');
+  document.getElementById('install-button').style.display = 'none';
+});
 
   </script>
 
