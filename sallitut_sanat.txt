@@ -323,7 +323,6 @@ fer-ro
 fet-si
 fi-le
 fi-lee
-fi-nis
 fii-kus
 fii-lis
 fil-maus
@@ -940,7 +939,6 @@ ju-ro
 ju-rous
 ju-ry
 ju-taa
-ju-te
 juh-la
 juh-ta
 juk-ka
