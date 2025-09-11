@@ -10,8 +10,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#cfc">
-  <title>Tavupeli</title>
-  <link rel="manifest" href="manifest.json">
+  <title>Tavukko</title>
+  <link rel="manifest" href="manifest4.json">
 
 <style>
     /* Yleiset tyylit */
@@ -163,6 +163,7 @@
     <select id="size">
       <option value="3" selected> 3×3 </option>
       <option value="4"> 4×4 </option>
+	  <option value="5"> 5×5 </option>
     </select>
     <button id="startBtn" onclick="startGame()" disabled>Aloita peli</button>
     <button id="lopetaBtn" onclick="naytaRatkaisu()" style="display:none">Lopeta</button>
@@ -248,7 +249,7 @@
 
   // Rekisteröi SW
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
+    navigator.serviceWorker.register('service-worker4.js')
       .then(() => console.log('Service Worker rekisteröity'))
       .catch(err => console.error('SW virhe', err));
   }
@@ -257,87 +258,101 @@
   lataaSanat().then(() => console.log("Sanalista ladattu."));
 
   // Aloita peli
-  function startGame() {
-    // Piilota valinnat, näytä pelipainikkeet
-    document.getElementById("size").style.display = "none";
-    document.getElementById("sizeLabel").style.display = "none";
-    document.getElementById("startBtn").style.display = "none";
-    document.getElementById("lopetaBtn").style.display = "inline-block";
-    document.getElementById("apuaBtn").style.display = "inline-block";
+function startGame() {
+  // Piilota valinnat, näytä pelipainikkeet
+  document.getElementById("size").style.display = "none";
+  document.getElementById("sizeLabel").style.display = "none";
+  document.getElementById("startBtn").style.display = "none";
+  document.getElementById("lopetaBtn").style.display = "inline-block";
+  document.getElementById("apuaBtn").style.display = "inline-block";
 
-    apuVaihtoja = 0;
-    apuPaljastuksia = 0;
-    statusElem.innerHTML = "";
+  apuVaihtoja = 0;
+  apuPaljastuksia = 0;
+  statusElem.innerHTML = "";
 
-    if (sallitutSanat.size === 0) {
-      alert("Sanoja ei ladattu.");
-      return;
-    }
-
-    koko = parseInt(document.getElementById("size").value, 10);
-
-    // *** UUSI: backtracking -palauttaa aina 2D-taulukon ***
-    ratkaisu = generoiKelvollinenRuudukko(koko);
-
-    // Valmistellaan aloitustila
-    const tavut = flatten2D(ratkaisu);
-    korostukset.clear();
-    lukitut.clear();
-    let oikeatIndeksit = [];
-
-    // Lukitaan 1 (3x3) tai 2 (4x4) tavua oikeille paikoilleen
-    const valitseIndeksi = () => Math.floor(Math.random() * tavut.length);
-    const eka = valitseIndeksi();
-    oikeatIndeksit.push(eka);
-
-    if (koko === 4) {
-      const r1 = Math.floor(eka / koko);
-      const c1 = eka % koko;
-      const kelvolliset = [];
-      for (let i = 0; i < tavut.length; i++) {
-        const r2 = Math.floor(i / koko);
-        const c2 = i % koko;
-        if (r2 !== r1 && c2 !== c1) kelvolliset.push(i);
-      }
-      if (kelvolliset.length > 0) {
-        const toinen = kelvolliset[Math.floor(Math.random() * kelvolliset.length)];
-        oikeatIndeksit.push(toinen);
-      }
-    }
-
-    // Asetetaan oikeat tavut paikoilleen, muut sekoitetaan
-    const tavutIlman = tavut.filter((_, i) => !oikeatIndeksit.includes(i));
-    const sekoitetut = shuffle(tavutIlman);
-
-    for (const i of oikeatIndeksit) {
-      sekoitetut.splice(i, 0, tavut[i]);
-      korostukset.add(i);
-      lukitut.add(i);
-    }
-
-    nykyinen = sekoitetut;
-    peliKaynnissa = true;
-    valinta = null;
-    render();
-
-    // Alkuanimaatio
-    const ruudut = document.querySelectorAll(".grid button");
-    ruudut.forEach((btn, i) => {
-      setTimeout(() => {
-        btn.style.transition = "transform 0.3s ease, background-color 0.3s ease";
-        btn.style.transform = "scale(1.15)";
-        if (!btn.classList.contains("correct")) {
-          btn.style.backgroundColor = "#cfc";
-        }
-        setTimeout(() => {
-          btn.style.transform = "scale(1)";
-          if (!btn.classList.contains("correct")) {
-            btn.style.backgroundColor = "#f0f0f0";
-          }
-        }, 300);
-      }, i * 30);
-    });
+  if (sallitutSanat.size === 0) {
+    alert("Sanoja ei ladattu.");
+    return;
   }
+
+  koko = parseInt(document.getElementById("size").value, 10);
+
+  // *** UUSI: backtracking -palauttaa aina 2D-taulukon ***
+  ratkaisu = generoiKelvollinenRuudukko(koko);
+
+  // Valmistellaan aloitustila
+  const tavut = flatten2D(ratkaisu);
+  korostukset.clear();
+  lukitut.clear();
+  let oikeatIndeksit = [];
+
+  // --- Päivitetty lukituslogiikka: 3x3 -> 1, 4x4 -> 2, 5x5 -> 3 (eri rivi & sarake) ---
+  const lukittavienMaara = (koko === 3) ? 1 : (koko === 4) ? 2 : 3;
+  const rivi = (i) => Math.floor(i / koko);
+  const sarake = (i) => i % koko;
+  const satunnainen = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  const kaikkiIndeksit = [...Array(tavut.length).keys()];
+
+  // 1) ensimmäinen vapaasti
+  oikeatIndeksit.push(satunnainen(kaikkiIndeksit));
+
+  // 2) loput niin, ettei tule samaa riviä tai saraketta aiempien kanssa
+  while (oikeatIndeksit.length < lukittavienMaara) {
+    const kelvolliset = kaikkiIndeksit.filter((i) =>
+      !oikeatIndeksit.includes(i) &&
+      oikeatIndeksit.every((j) => rivi(i) !== rivi(j) && sarake(i) !== sarake(j))
+    );
+    if (kelvolliset.length === 0) break; // varalta, käytännössä 5x5:ssä löytyy
+    oikeatIndeksit.push(satunnainen(kelvolliset));
+  }
+
+  // --- Asetus ilman splice-indeksisiirtymiä ---
+  const lukitutSet = new Set(oikeatIndeksit);
+  const tavutIlman = tavut.filter((_, i) => !lukitutSet.has(i));
+  const sekoitetut = shuffle(tavutIlman);
+
+  // alustetaan aloituspaikat
+  const aloitus = Array(tavut.length).fill(null);
+
+  // aseta lukitut oikeille paikoilleen ja merkitse ne
+  for (const idx of oikeatIndeksit) {
+    aloitus[idx] = tavut[idx];
+    korostukset.add(idx);
+    lukitut.add(idx);
+  }
+
+  // täytä loput sekoitetuilla
+  let p = 0;
+  for (let i = 0; i < aloitus.length; i++) {
+    if (aloitus[i] === null) aloitus[i] = sekoitetut[p++];
+  }
+
+  nykyinen = aloitus;
+  // --- /lukituslogiikan päivitys ---
+
+  peliKaynnissa = true;
+  valinta = null;
+  render();
+
+  // Alkuanimaatio
+  const ruudut = document.querySelectorAll(".grid button");
+  ruudut.forEach((btn, i) => {
+    setTimeout(() => {
+      btn.style.transition = "transform 0.3s ease, background-color 0.3s ease";
+      btn.style.transform = "scale(1.15)";
+      if (!btn.classList.contains("correct")) {
+        btn.style.backgroundColor = "#cfc";
+      }
+      setTimeout(() => {
+        btn.style.transform = "scale(1)";
+        if (!btn.classList.contains("correct")) {
+          btn.style.backgroundColor = "#f0f0f0";
+        }
+      }, 300);
+    }, i * 30);
+  });
+}
+
 
   // Renderöi ruudukko
   function render() {
