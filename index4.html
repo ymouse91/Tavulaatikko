@@ -76,7 +76,7 @@
       padding: 10px;
       border: 1px solid #ccc;
       width: 60%;
-      min-width: 180px;
+      min-width: 210px;
       max-width: 280px;
       background: #f9f9f9;
       text-align: left;
@@ -131,6 +131,35 @@
       text-decoration: underline;
       color: #0077cc;
     }
+
+.main-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Leveällä näytöllä vierekkäin */
+@media (min-width: 800px) {
+  .main-area {
+    flex-direction: row;
+    justify-content: center;   /* keskittää koko alueen ruudulle */
+    align-items: flex-start;
+    gap: 40px;                 /* väli gridin ja statuksen väliin */
+    margin: 0 auto;
+  }
+
+  #grid {
+    margin: 0;                 /* poista automaattikeskitys */
+  }
+
+  #status {
+    text-align: left;          /* teksti vasemmalle, näyttää siistiltä */
+    max-width: 300px;          /* voit rajoittaa leveyttä */
+  }
+}
+
+
 </style>
 
 </head>
@@ -140,12 +169,12 @@
     <h2>Ohjeet</h2>
     <p><strong>Tavukko</strong> on sanapeli, jossa tavoitteena on muodostaa täysi ruudukko suomenkielisiä kaksitavuisia sanoja.</p>
     <ul>
-      <li>Valitse ruudukon koko: 3×3 tai 4×4.</li>
+      <li>Valitse ruudukon koko: 3×3, 4×4 tai 5x5</li>
       <li>Paina <strong>Aloita peli</strong>. Tavut ilmestyvät ruudukkoon.</li>
       <li>Valitse kaksi ruutua vuorotellen vaihtaaksesi niiden paikkaa.</li>
       <li>Tavoitteena on, että jokainen <strong>tavupari</strong> vasemmalta oikealle ja ylhäältä alas muodostaa oikean sanan.</li>
       <li>Vihreät ruudut ovat oikeassa paikassa, eikä niitä voi siirtää.</li>
-      <li><strong>Apua</strong>-painikkeella voit paljastaa yhden oikealla paikalla olevan tavun tai siirtää valitun tavun oikealle paikalle.</li>
+      <li><strong>Apua</strong>-painikkeella voit paljastaa yhden oikealla paikalla olevan tavun, jos sellainen löytyy,  tai siirtää valitun tavun oikealle paikalle.</li>
       <li><strong>Lopeta</strong>-painike näyttää oikean ratkaisun ja kaikki sanat. Sanojen selityksen löydät klikkaamalla sanaa.</li>
     </ul>
     <div style="text-align: center; margin-top: 20px;">
@@ -169,13 +198,13 @@
     <button id="lopetaBtn" onclick="naytaRatkaisu()" style="display:none">Lopeta</button>
     <button id="apuaBtn" onclick="annaApua()" style="display:none">Apua</button>
   </div>
-
+<div class="main-area">
   <!-- Varsinainen ruudukko -->
   <div id="grid" class="grid"></div>
 
   <!-- Voitto-/ratkaisulaatikko -->
   <div id="status" class="won"></div>
-
+</div>
   <script>
   // -----------------------------
   // TÄMÄ ON KOKO PELIN TOIMINNALLINEN LOGIIKKA
@@ -529,13 +558,13 @@ function startGame() {
         pysty.push(`${ratkaisu[r][c]}-${ratkaisu[r + 1][c]}`);
       }
     }
-    naytaSanat(vaaka, pysty, "Ratkaisun sanat.");
+    naytaSanat(vaaka, pysty, "Ratkaisun sanat:");
   }
 
   // Sanalista linkkeineen
 function naytaSanat(vaaka, pysty, otsikko) {
   statusElem.innerHTML = `
-    <div>${otsikko}</div>
+    <div style="text-align:center;">${otsikko}</div>
     <div class="scroll-box" style="display: flex; gap: 20px; justify-content: center;">
       <div><b>Vaakaan:</b><br>
         ${vaaka.map(s => `<a href='https://www.kielitoimistonsanakirja.fi/#/${s.replace("-", "").toLowerCase()}' target='_blank'>${s.replace("-", "")}</a>`).join("<br>")}
