@@ -6,166 +6,124 @@
   <meta name="theme-color" content="#cfc">
   <title>Tavukko</title>
   <link rel="manifest" href="manifest.json">
- <style>
-    :root {
-      --tausta: #f9f9f9;
-      --teksti: #1a1a1a;
-      --painike: #ffffff;
-      --painike-hover: #e6f0f8;
-      --napin-teksti: #1a1a1a;
-      --correct-bg: #ccebd1;
-      --error-bg: #ffd6d6;
-      --reuna: #dcdcdc;
-    }
-
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-    }
-
+  <style>
     body {
-      font-family: "Helvetica Neue", Arial, sans-serif;
-      background-color: var(--tausta);
-      color: var(--teksti);
+      font-family: sans-serif;
       text-align: center;
-      padding: 16px;
-      box-sizing: border-box;
+      margin: 20px;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transform: scale(1);
+      transform-origin: top center;
     }
 
-    h1 button#otsikkoBtn {
-      font-family: Georgia, serif;
-      font-size: 2em;
-      color: var(--teksti);
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0;
+    h1 {
+      margin-bottom: 0px;
     }
 
-.grid {
-  display: grid;
-  gap: 8px;
-  grid-template-columns: repeat(3, 1fr);
-  width: fit-content;
-  margin: 20px auto;
-}
-
+    .grid {
+      display: grid;
+      gap: 5px;
+      justify-content: center;
+      margin: 10px auto;
+    }
 
     .grid button {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 100%;
-      aspect-ratio: 1;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: 1px solid #888;
+      background-color: #f0f0f0;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      width: 60px;
+      height: 60px;
       font-size: 18px;
       font-weight: bold;
-      padding: 8px;
-      border: 1px solid var(--reuna);
-      border-radius: 10px;
-      background: var(--painike);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      cursor: pointer;
-      transition: background-color 0.2s ease, transform 0.2s ease;
     }
 
     .grid button.correct {
-      background-color: var(--correct-bg);
+      background-color: #cfc;
     }
 
     .grid button.flash-error {
-      background-color: var(--error-bg) !important;
+      background-color: #fcc !important;
     }
 
-.controls {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 5px;
-}
-
+    .controls {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
 
     .won {
       font-weight: bold;
       color: green;
-      font-size: 1.4em;
+      font-size: 0.9em;
     }
 
+    .scroll-box {
+      max-height: 200px;
+      overflow-y: auto;
+      margin: 10px auto;
+      padding: 10px;
+      border: 1px solid #ccc;
+      width: 80%;
+      min-width: 180px;
+      max-width: 280px;
+      background: #f9f9f9;
+      text-align: left;
+      font-size: 14px;
+    }
 
     button {
       font-size: 16px;
-      padding: 6px 14px;
-      border-radius: 8px;
-      border: 1px solid var(--reuna);
-      background-color: var(--painike);
-      color: var(--napin-teksti);
+      padding: 6px 12px;
+      border-radius: 24px;
+      border: 1px solid #888;
+      background-color: #f0f0f0;
       cursor: pointer;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
       margin: 4px;
-      transition: background-color 0.2s ease;
     }
 
     button:hover {
-      background-color: var(--painike-hover);
+      background-color: #ddd;
     }
 
-.scroll-box {
-  width: 90%;           /* Skaalautuu ikkunan mukaan */
-  max-width: 300px;     /* Ei ylitä tätä arvoa koskaan */
-  min-width: 260px;     /* Aina vähintään näin leveä */
-  margin: 0 auto;       /* Keskittää vaakasuunnassa */
-  padding: 16px;
-  border: 1px solid #ccc;
-  background: #fff;
-  border-radius: 12px;
-  overflow-y: auto;
-  font-size: 18px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-}
-
-.scroll-box b {
-  display: block;
-  margin-bottom: 6px;
-  color: #333;
-}
-
-.scroll-box a {
-  text-decoration: none;
-  color: #0050aa;
-  font-weight: 500;
-}
-
-.scroll-box a:hover {
-  text-decoration: underline;
-  color: #003377;
-}
-
-
-    dialog {
-      border: none;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      padding: 24px;
+    #startBtn:hover {
+      background-color: #cfc;
     }
 
+    #lopetaBtn:hover {
+      background-color: #fdd;
+    }
+
+    #apuaBtn:hover {
+      background-color: #fffbcc;
+    }
+
+    #ohjeBtn:hover {
+      background-color: #ffffcc;
+    }
+
+    .scroll-box a {
+      text-decoration: none;
+      color: #000;
+    }
+
+    .scroll-box a:hover {
+      text-decoration: underline;
+      color: #0077cc;
+    }
+
+    /* Skaalaus suuremmille näytöille */
     @media (min-width: 1024px) and (orientation: landscape) {
       body {
-        font-size: 1.1em;
-      }
-
-      button {
-        font-size: 18px;
-        padding: 8px 16px;
-      }
-
-      .grid {
-        grid-template-columns: repeat(3, minmax(80px, 1fr));
-      }
-
-      .grid button {
-        font-size: 20px;
+        transform: scale(1.3);
       }
 
       #otsikkoBtn {
@@ -174,59 +132,25 @@
       }
     }
 
-
-
-button {
-  background-color: #fff;
-  color: #000;
-  border: 1px solid #000;
-  border-radius: 24px;
-  padding: 10px 18px;
-  font-weight: bold;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-button:hover {
-  background-color: #f2f2f2;
-}
-.centered-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-
-
-/* Erikoistapaus: pyöreät napit */
-button.circle {
-  width: 42px;
-  height: 42px;
-  padding: 0;
-  border-radius: 50%;
-  font-size: 18px;
-  text-align: center;
-  line-height: 1;
-}
-
-
+    html, body {
+      overflow-x: hidden;
+    }
   </style>
 </head>
 <body>
 
-<!-- Ohjeet -->
+<!-- Ohjeet-dialogi ja otsikkonappi -->
 <dialog id="ohjeet" style="max-width: 600px; width: 90%; text-align: left;">
   <h2>Ohjeet</h2>
-  <p><strong>Tavukko</strong> on sanapeli, jossa tavoitteena on muodostaa täysi ruudukko suomenkielisiä <strong>kaksitavuisia</strong> sanoja.</p>
+  <p><strong>Tavukko</strong> on sanapeli, jossa tavoitteena on muodostaa täysi ruudukko suomenkielisiä <b>kaksitavuisia sanoja</b>.</p>
   <ul>
-    <li>Tavuruudukko on 3×3-kokoinen.</li>
-    <li>Paina <strong>Aloita peli</strong>. Tavut ilmestyvät ruudukkoon.</li>
+    <li>Ruudukko on 3×3-kokoinen.</li>
+    <li>Paina <strong>Aloita peli</strong>, niin tavut ilmestyvät ruudukkoon.</li>
     <li>Valitse kaksi ruutua vuorotellen vaihtaaksesi niiden paikkaa.</li>
-    <li>Tavoitteena on, että jokainen ruudukossa oleva <strong>tavupari</strong> vasemmalta oikealle ja ylhäältä alas muodostaa oikean sanan.</li>
-    <li>Vihreät ruudut ovat oikeassa paikassa, eikä niitä voi siirtää.</li>
-    <li><strong>Apua</strong>-painikkeella voit paljastaa yhden oikealla paikalla olevan tavun tai siirtää valitun tavun oikealle paikalle.</li>
-    <li><strong>Lopeta</strong>-painike näyttää oikean ratkaisun ja kaikki sanat. Sanojen selityksen löydät klikkaamalla sanaa.</li>
+    <li>Tavoitteena on, että kaikki vaakaan ja pystyyn muodostuvat tavuparit ovat oikeita sanoja.</li>
+    <li>Vihreät ruudut ovat oikeassa paikassa eivätkä ole enää siirrettävissä.</li>
+    <li><strong>Apua</strong> voi paljastaa tai siirtää yhden oikean tavun.</li>
+    <li><strong>Lopeta</strong> näyttää oikean ratkaisun ja linkit sanojen selityksiin.</li>
   </ul>
   <p>Versio 1.2s</p>
   <div style="text-align: center; margin-top: 20px;">
@@ -236,28 +160,50 @@ button.circle {
 
 <h1>
   <button id="otsikkoBtn" onclick="document.getElementById('ohjeet').showModal()" style="font-size: 1.5em; font-weight: bold; border: none; background: none; cursor: pointer;">
-     Tavukko 
+    Tavukko
   </button>
 </h1>
 
-<div class="centered-container" style="display: flex; flex-direction: column; align-items: center;">
-  <div class="controls">
-    <button id="ohjeBtn" onclick="document.getElementById('ohjeet').showModal()">Ohjeet</button>
-    <button id="startBtn" onclick="startGame()" disabled>Aloita peli</button>
-    <button id="apuaBtn" onclick="annaApua()" style="display:none">Apua</button>
-    <button id="lopetaBtn" onclick="naytaRatkaisu()" style="display:none">Lopeta</button>
-  </div>
-  <div id="grid" class="grid"></div>
+<!-- Ohjauspainikkeet -->
+<div class="controls">
+  <button id="ohjeBtn" onclick="document.getElementById('ohjeet').showModal()">Ohjeet</button>
+  <button id="startBtn" onclick="startGame()" disabled>Aloita peli</button>
+  <button id="apuaBtn" onclick="annaApua()" style="display:none">Apua</button>
+  <button id="lopetaBtn" onclick="naytaRatkaisu()" style="display:none">Lopeta</button>
 </div>
 
+<!-- Ruudukko ja tila-alue -->
+<div id="grid" class="grid"></div>
 <div id="status" class="won"></div>
 
-<!-- Pelin JavaScript -->
+<button id="install-button" style="
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  padding: 10px 16px;
+  font-size: 16px;
+  border-radius: 8px;
+  background-color: #0078D4;
+  color: white;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  cursor: pointer;
+">
+  📥 Asenna Tavukko
+</button>
+
+
+<!-- JavaScript-koodi alkaa -->
+
 <script>
   const gridElem = document.getElementById("grid");
   const statusElem = document.getElementById("status");
   const startBtn = document.getElementById("startBtn");
   const lopetaBtn = document.getElementById("lopetaBtn");
+  
+  let aloitusaika = null;
 
   let koko = 3;
   let ratkaisu = [];
@@ -323,8 +269,8 @@ function startGame() {
   document.getElementById("startBtn").style.display = "none";
   document.getElementById("lopetaBtn").style.display = "inline-block";
   document.getElementById("apuaBtn").style.display = "inline-block";
-  document.getElementById("ohjeBtn").style.display = "none";
-
+  
+  aloitusaika = new Date();
   apuVaihtoja = 0;
   apuPaljastuksia = 0;
   statusElem.innerHTML = "";
@@ -503,21 +449,20 @@ function tarkistaVoitto() {
     document.getElementById("startBtn").style.display = "inline-block";
     document.getElementById("lopetaBtn").style.display = "none";
     document.getElementById("apuaBtn").style.display = "none";
-	document.getElementById("ohjeBtn").style.display = "inline-block";
-
     peliKaynnissa = false;
 
-    let paljastamattomia = nykyinen.length - korostukset.size;
-    let maxPisteet = koko === 3 ? 10 : 20;
-    let pisteet = 0;
-    if (paljastamattomia >= 3) {
-      pisteet = maxPisteet - (2 * apuVaihtoja) - (1 * apuPaljastuksia);
-      if (pisteet < 0) pisteet = 0;
-    } else {
-      pisteet = 0;
-    }
+let loppuaika = new Date();
+let kestoMs = loppuaika - aloitusaika;
+let sekunnit = Math.floor(kestoMs / 1000);
+let minuutit = Math.floor(sekunnit / 60);
+sekunnit = sekunnit % 60;
 
-    naytaSanat(vaaka, pysty, `Voitit! Pisteesi: <b>${pisteet}</b>`);
+naytaSanat(
+  vaaka,
+  pysty,
+  `Aikaa kului: <b>${minuutit} min ${sekunnit} s</b><br>Apua pyydetty: <b>${apuVaihtoja + apuPaljastuksia}</b> kertaa`
+);
+
   }, koko * koko * 30 + 500);
 }
 
@@ -528,8 +473,6 @@ function naytaRatkaisu() {
   document.getElementById("startBtn").style.display = "inline-block";
   document.getElementById("lopetaBtn").style.display = "none";
   document.getElementById("apuaBtn").style.display = "none";
-  document.getElementById("ohjeBtn").style.display = "inline-block";
-
 
   nykyinen = ratkaisu.flat();
   peliKaynnissa = false;
@@ -546,7 +489,7 @@ function naytaRatkaisu() {
       pysty.push(`${ratkaisu[r][c]}-${ratkaisu[r + 1][c]}`);
     }
   }
-  naytaSanat(vaaka, pysty, "Ratkaisun sanat:");
+  naytaSanat(vaaka, pysty, "Ratkaisun sanat.");
 }
 
 // Näyttää listan muodostetuista sanoista linkkeineen Kielitoimiston sanakirjaan
@@ -554,10 +497,10 @@ function naytaSanat(vaaka, pysty, otsikko) {
   statusElem.innerHTML = `
     <div>${otsikko}</div>
     <div class="scroll-box" style="display: flex; gap: 20px; justify-content: center;">
-      <div><b>Vaakaan:</b>
+      <div><b>Vaakaan:</b><br>
         ${vaaka.map(s => `<a href='https://www.kielitoimistonsanakirja.fi/#/${s.replace("-", "").toLowerCase()}' target='_blank'>${s.replace("-", "")}</a>`).join("<br>")}
       </div>
-      <div><b>Pystyyn:</b>
+      <div><b>Pystyyn:</b><br>
         ${pysty.map(s => `<a href='https://www.kielitoimistonsanakirja.fi/#/${s.replace("-", "").toLowerCase()}' target='_blank'>${s.replace("-", "")}</a>`).join("<br>")}
       </div>
     </div>`;
@@ -643,6 +586,34 @@ function naytaAlkuanimaatio() {
     startBtn.style.display = "inline-block";
   }, viive + 500);
 }
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  console.log('beforeinstallprompt saatiin');
+  e.preventDefault();
+  deferredPrompt = e;
+
+  const installBtn = document.getElementById('install-button');
+  installBtn.style.display = 'inline-block';
+
+  installBtn.addEventListener('click', () => {
+    installBtn.style.display = 'none';
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('Käyttäjä hyväksyi asennuksen');
+      } else {
+        console.log('Käyttäjä hylkäsi asennuksen');
+      }
+      deferredPrompt = null;
+    });
+  });
+});
+
+window.addEventListener('appinstalled', () => {
+  console.log('Sovellus asennettiin!');
+  document.getElementById('install-button').style.display = 'none';
+});
 
   </script>
 

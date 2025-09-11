@@ -281,8 +281,15 @@ function startGame() {
   }
 
   koko = 3;
+  try {
   ratkaisu = generoiKelvollinenRuudukko(koko);
-  const tavut = ratkaisu.flat();
+} catch (e) {
+  console.error(e);
+  alert('Ruudukon generointi epäonnistui: ' + e.message);
+  return;
+}
+  if (!ratkaisu || !Array.isArray(ratkaisu) || !Array.isArray(ratkaisu[0])) { throw new Error('Generointi epäonnistui: ratkaisu ei ole 2D-taulukko.'); }
+  const tavut = flatten2D(ratkaisu);
   korostukset.clear();
   lukitut.clear();
   let oikeatIndeksit = [];
@@ -341,68 +348,99 @@ function render() {
 }
 // Käyttäjän klikkauslogiikka: valinta tai vaihto
 function valitseTaiVaihda(i) {
-  if (!peliKaynnissa) return;  // Estetään vaihto jos peli päättynyt
+if (!peliKaynnissa) return;  // Estetään vaihto jos peli päättynyt
 
-  if (lukitut.has(i)) {
-    // Jos ruutu on lukittu, näytetään virhevälähdys
-    vilautusIndeksi = i;
-    render();
-    setTimeout(() => {
-      vilautusIndeksi = null;
-      render();
-    }, 400);
-    return;
-  }
-
-  if (valinta === null) {
-    valinta = i;  // Ensimmäinen valinta
-  } else if (valinta === i) {
-    valinta = null; // Sama uudelleen -> peru valinta
-  } else {
-    // Vaihdetaan kahden ruudun tavut, jos kumpikaan ei ole lukittu
-    if (lukitut.has(i) || lukitut.has(valinta)) return;
-    [nykyinen[i], nykyinen[valinta]] = [nykyinen[valinta], nykyinen[i]];
-    valinta = null;
-    render();
-    setTimeout(() => tarkistaVoitto(), 20); // Viivästetty tarkistus voiton animaation vuoksi
-  }
+if (lukitut.has(i)) {
+  vilautusIndeksi = i;
   render();
+  setTimeout(() => {
+    vilautusIndeksi = null;
+    render();
+  }, 400);
+  return;
 }
+
+if (valinta === null) {
+  valinta = i;
+  render();
+  return;
+}
+
+if (valinta === i) {
+  valinta = null;
+  render();
+  return;
+}
+
+if (lukitut.has(i) || lukitut.has(valinta)) {
+  valinta = null;
+  render();
+  return;
+}
+
+[nykyinen[i], nykyinen[valinta]] = [nykyinen[valinta], nykyinen[i]];
+valinta = null;
+
+render();
+setTimeout(() => {
+  tarkistaVoitto();
+}, 60);
+}
+
 
 // Generoi ruudukko, jossa kaikki vaaka- ja pystysuorat tavuparit ovat sallittuja sanoja
-function generoiKelvollinenRuudukko(n) {
-  const grid = Array.from({ length: n }, () => Array(n).fill(""));
-  const maxYritykset = 10000;
-  let yritykset = 0;
+function generoiKelvollinenRuudukko(n) {const grid = Array.from({ length: n }, () => Array(n).fill(""));
+const käytetyt = new Map(); // tavu -> count
 
-  while (yritykset++ < maxYritykset) {
-    const käytetyt = {};
-    for (let r = 0; r < n; r++) {
-      for (let c = 0; c < n; c++) {
-        const ehdokkaat = shuffle([...tavulista]);
-        let asetettu = false;
-        for (const tavu of ehdokkaat) {
-          if ((käytetyt[tavu] || 0) >= 1) continue;  // Sama tavu vain kerran
-          grid[r][c] = tavu;
-          const vasenOk = c === 0 || sallitutSanat.has(`${grid[r][c - 1]}-${tavu}`);
-          const ylaOk = r === 0 || sallitutSanat.has(`${grid[r - 1][c]}-${tavu}`);
-          if (vasenOk && ylaOk) {
-            käytetyt[tavu] = (käytetyt[tavu] || 0) + 1;
-            asetettu = true;
-            break;
-          }
-          grid[r][c] = "";
-        }
-        if (!asetettu) break;
-      }
-    }
-    if (grid.flat().every(t => t)) return grid;
+function shuffleInPlace(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
-
-  alert("Ei onnistuttu muodostamaan kelvollista ruudukkoa.");
-  return Array.from({ length: n }, () => Array(n).fill("??"));
+  return arr;
 }
 
+function ehdokkaat(r, c) {
+  const arr = Array.isArray(tavulista) ? tavulista.slice() : Array.from(tavulista);
+  shuffleInPlace(arr);
+  const out = [];
+  for (const tavu of arr) {
+    if ((käytetyt.get(tavu) || 0) >= 1) continue; // Sama tavu vain kerran
+    if (c > 0) {
+      const left = grid[r][c - 1];
+      if (left && !sallitutSanat.has(`${left}-${tavu}`)) continue;
+    }
+    if (r > 0) {
+      const up = grid[r - 1][c];
+      if (up && !sallitutSanat.has(`${up}-${tavu}`)) continue;
+    }
+    out.push(tavu);
+  }
+  return out;
+}
+
+function bt(pos) {
+  if (pos === n * n) return true;
+  const r = Math.floor(pos / n);
+  const c = pos % n;
+  const cand = ehdokkaat(r, c);
+  for (const tavu of cand) {
+    grid[r][c] = tavu;
+    käytetyt.set(tavu, (käytetyt.get(tavu) || 0) + 1);
+    if (bt(pos + 1)) return true;
+    const cnt = (käytetyt.get(tavu) || 1) - 1;
+    if (cnt <= 0) käytetyt.delete(tavu); else käytetyt.set(tavu, cnt);
+    grid[r][c] = "";
+  }
+  return false;
+}
+
+if (!bt(0)) {
+  alert("Ei onnistuttu muodostamaan kelvollista ruudukkoa (backtracking).");
+  return Array.from({ length: n }, () => Array(n).fill("??"));
+}
+return grid;
+}
 // Tarkistaa onko nykyinen ruudukko valmis ja näyttää voiton, jos kaikki tavuparit kelvollisia
 function tarkistaVoitto() {
   const grid = [];
@@ -615,7 +653,22 @@ window.addEventListener('appinstalled', () => {
   document.getElementById('install-button').style.display = 'none';
 });
 
-  </script>
+  
+function flatten2D(arr){
+  if (!Array.isArray(arr)) return [];
+  if (typeof arr.flat === 'function') return arr.flat(); // syvyys 1
+  const out = [];
+  for (let i = 0; i < arr.length; i++){
+    const row = Array.isArray(arr[i]) ? arr[i] : [];
+    for (let j = 0; j < row.length; j++){
+      out.push(row[j]);
+    }
+  }
+  return out;
+}
+
+</script>
+
 
 </body>
 </html>

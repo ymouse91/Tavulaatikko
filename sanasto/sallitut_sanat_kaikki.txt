@@ -19,7 +19,6 @@ a-mok
 a-ne
 a-ni
 a-nis
-a-nus
 a-pe
 a-peus
 a-pu
@@ -190,9 +189,6 @@ bis-nes
 bis-se
 bit-ter
 bit-ti
-blan-daus
-blan-dis
-bling-bling
 blok-kaus
 blok-ki
 blon-daus
@@ -759,7 +755,6 @@ ho-ki
 ho-ku
 ho-me
 ho-ming
-ho-mo
 ho-mous
 ho-ro
 ho-sa
@@ -2029,7 +2024,6 @@ kuk-sa
 kul-ho
 kul-ju
 kul-ku
-kul-li
 kul-ma
 kul-maus
 kul-ta
@@ -2149,7 +2143,6 @@ kyn-tö
 kyp-si
 kyp-syys
 kyp-sä
-kyr-pä
 kyr-sä
 kys-sä
 kys-ta
@@ -3641,7 +3634,6 @@ par-vi
 park-ki
 park-kis
 pas-ha
-pas-ka
 pas-ma
 pas-pa
 pas-pis
@@ -3727,7 +3719,6 @@ per-keet
 per-kuu
 per-mis
 per-na
-per-se
 per-so
 per-su
 per-vo
@@ -3750,7 +3741,6 @@ pi-ha
 pi-haus
 pi-heys
 pi-hi
-pi-ka‑
 pi-kee
 pi-keys
 pi-ki
@@ -3823,15 +3813,12 @@ pik-ku‑
 pik-nik
 pil-ke
 pil-li
-pil-lu
 pil-vi
 pilk-ka
 pilk-ki
 pilk-ku
 pilt-ti
 pilt-tuu
-pimp-pi
-pimp-sa
 pin-ja
 pin-ko
 pin-na
@@ -3849,8 +3836,6 @@ pirs-ke
 pirs-si
 pirs-ta
 pis-ki
-pis-sa
-pis-si
 pis-sis
 pis-te
 pis-tin
@@ -5763,7 +5748,6 @@ tus-ka
 tus-kin
 tus-saus
 tus-si
-tus-su
 tut-ka
 tut-kain
 tut-kaus
@@ -6340,7 +6324,6 @@ vit-sa
 vit-sas
 vit-saus
 vit-si
-vit-tu
 viuh-ka
 viuh-ke
 viuh-ko
