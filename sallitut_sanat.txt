@@ -237,7 +237,6 @@ dyy-ni
 e-des
 e-dus
 e-go
-e-hei
 e-heys
 e-hyt
 e-ka
@@ -611,7 +610,6 @@ ho-ki
 ho-ku
 ho-me
 ho-ming
-ho-mous
 ho-sa
 ho-vi
 hoh-de
@@ -1367,7 +1365,6 @@ ki-sa
 ki-su
 ki-ta
 ki-va
-ki-ves
 ki-veys
 ki-vi
 ki-wi
@@ -2469,7 +2466,6 @@ met-ri
 met-ro
 met-so
 met-sä
-mi-au
 mi-di
 mi-hin
 mi-kin

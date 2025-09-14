@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <!--
+ Tavuruudukko generaattori
+  -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#cfc">
+  <link rel="manifest" href="manifest_prot.json">
+  <title>Tavuruudukko – parametroitava generaattori</title>
+  <style>
+    :root{
+      --bg:#f7f7fb;
+      --ink:#111;
+      --muted:#666;
+      --ok:#2e7d32;
+      --bad:#c62828;
+      --accent:#e91e63;
+      --grid:#ddd;
+      --cell:#fff;
+      --lock:#e8f5e9;
+      --btn:#3f51b5;
+      --btn-ink:#fff;
+      --panel:#fff;
+      --panel-border:#e0e0e0;
+    }
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial}
+    header{padding:12px 16px;border-bottom:1px solid var(--panel-border);background:#fff;position:sticky;top:0;z-index:2}
+    header .date{font-weight:600;color:var(--muted)}
+    main{display:grid;grid-template-columns: 380px 1fr; gap:16px; padding:16px}
+    .card{background:var(--panel);border:1px solid var(--panel-border);border-radius:12px;padding:12px}
+    h1{font-size:18px;margin:0 0 6px 0}
+    h2{font-size:16px;margin:0 0 8px 0}
+    .controls label{display:block;font-size:13px;color:var(--muted);margin-top:8px}
+    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    input[type="number"],input[type="text"],select{padding:6px 8px;border-radius:8px;border:1px solid var(--panel-border);background:#fff;min-width:0}
+    input[type="range"]{width:100%}
+    .btn{background:var(--btn);color:var(--btn-ink);border:0;border-radius:999px;padding:10px 14px;font-weight:600;cursor:pointer}
+    .btn.secondary{background:#eee;color:#222}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .board{--n:3; display:grid; grid-template-columns: repeat(var(--n), 1fr); gap:8px; width:min(90vmin,680px); margin:0 auto}
+    .cell{position:relative; border:1px solid var(--grid); background:var(--cell); border-radius:10px; display:grid; place-items:center; aspect-ratio:1/1; font-weight:700; font-size:clamp(14px, 4.5vmin, 32px); letter-spacing:.5px; user-select:none}
+    .cell.locked{background:var(--lock); outline:2px solid var(--ok)}
+    .cell .small{position:absolute;bottom:4px;right:6px;font-size:10px;font-weight:600;color:var(--muted)}
+    .status{padding:8px 10px;border-radius:8px;background:#fafafa;border:1px solid var(--panel-border);font-size:14px}
+    .ok{color:var(--ok)} .bad{color:var(--bad)} .accent{color:var(--accent)}
+    .pairlist{display:flex; gap:24px; justify-content:center; margin-top:8px; font-size:14px}
+    .pairlist a{color:var(--accent); text-decoration:none}
+    .gridwrap{display:flex; justify-content:center}
+    .two-cols{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    .muted{color:var(--muted)}
+    .kpis{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:8px}
+    .kpi{background:#fafafa;border:1px solid var(--panel-border);border-radius:10px;padding:8px}
+    .kpi b{font-size:18px; display:block}
+    .hr{height:1px;background:var(--panel-border);margin:10px 0}
+    details{border:1px dashed var(--panel-border); border-radius:10px; padding:8px 10px; background:#fcfcff}
+    summary{cursor:pointer; font-weight:600}
+    .note{font-size:12px;color:var(--muted)}
+	#newBtn {
+  background: red !important;
+  color: white !important;
+}
+.board {
+  display: grid;
+  grid-template-columns: repeat(var(--n), 1fr);
+  gap: 6px;
+  width: 95vw;              /* vie lähes koko ikkunan leveyden */
+  max-width: 500px;         /* mutta ei ylitä 500px */
+  margin: 0 auto;
+}
+
+.cell {
+  aspect-ratio: 1 / 1;      /* aina neliö */
+  font-size: clamp(12px, 5vw, 28px); /* skaalaa fontti */
+}
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="row" style="justify-content:space-between;">
+      <div class="date" id="today"></div>
+      <div class="legend">Parametroitava tavuruudukon generaattori (3×3 / 4×4)</div>
+    </div>
+  </header>
+  <main>
+    <section class="card">
+      <h1>Asetukset</h1>
+      <div class="controls">
+        <label>Ruudukon koko</label>
+        <div class="row">
+          <select id="sizeSel">
+            <option value="3">3 × 3</option>
+            <option value="4">4 × 4</option>
+          </select>
+          <button class="btn secondary" id="analysoiBtn">Analysoi sanapooli</button>
+        </div>
+
+        <div class="hr"></div>
+        <h2>Pituus-mix (%)</h2>
+        <div class="two-cols">
+          <div>
+            <label>2-kirjaimiset <span id="p2v">60</span>%</label>
+            <input type="range" min="0" max="100" value="60" id="p2" />
+            <label>3-kirjaimiset <span id="p3v">35</span>%</label>
+            <input type="range" min="0" max="100" value="35" id="p3" />
+            <label>4+ -kirjaimiset <span id="p4v">5</span>%</label>
+            <input type="range" min="0" max="100" value="5" id="p4" />
+            <div class="note">Yhteissumma tasataan automaattisesti 100%:iin.</div>
+			            <label>Minimi-aste (verkottuneisuus)</label>
+            <div class="row">
+              <span class="muted">len2</span><input type="number" id="d2" value="2" min="0" style="width:70px">
+              <span class="muted">len3</span><input type="number" id="d3" value="3" min="0" style="width:70px">
+              <span class="muted">len4+</span><input type="number" id="d4" value="4" min="0" style="width:70px">
+            </div>
+          </div>
+          <div>
+
+          <label class="row" style="display:none">Maks. esiintymät per tavu
+              <input type="number" id="maxOcc" value="1" min="1" style="width:80px">
+            </label>
+            <label class="row">Lukittavien ruutujen määrä
+              <input type="number" id="lockCount" value="1" min="0" max="6" style="width:80px">
+              <span class="note">(3×3: suositus 1–2, 4×4: 2–3)</span>
+            </label>
+            <label>Satunnaisuus <span id="randv">40</span>%</label>
+            <input type="range" id="rand" min="0" max="100" value="40">
+            <div class="note">Lisää "jitteriä" kandidaattilistan järjestykseen (0% = deterministisempi, 100% = enemmän arpaonnea).</div>
+			<label>Aloituksen satunnaisuus <span id="startRv">0</span>%</label>
+            <input type="range" id="startR" min="0" max="100" value="0">
+            <div class="note">0% = valitse verkottunein aloitus­tavu, 100% = täysin satunnainen aloitus (kun minimi-aste täyttyy).</div>
+
+          </div>
+        </div>
+
+        <div class="hr"></div>
+        <h2>Sanapooli</h2>
+        <label>Lista (kaksi­tavuisia sanoja, muodossa "ta-vu")</label>
+        <input type="text" id="wordUrl" value="sallitut_sanat.txt" />
+        <div class="row" style="margin-top:8px;">
+          <button class="btn" id="startBtn">Aloita peli</button>
+          <button class="btn secondary" id="newBtn">Uusi ruudukko</button>
+          <button class="btn secondary" id="shuffleBtn">Sekoita uudestaan</button>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi"><span class="muted">Uniikkeja tavuja</span><b id="kpiSyll">–</b></div>
+          <div class="kpi"><span class="muted">Tavuparit (sallitut)</span><b id="kpiPairs">–</b></div>
+          <div class="kpi"><span class="muted">Keskim. aste</span><b id="kpiDeg">–</b></div>
+        </div>
+
+        <div class="hr"></div>
+        <details>
+          <summary>Mitä “aste” tarkoittaa?</summary>
+          <p class="note">
+            Aste = kuinka moneen pariin tavu liittyy (sisään + ulos). Korkea aste tarkoittaa, että tavulla on
+            paljon laillisia naapureita, mikä helpottaa generointia. Voit vaatia pitkiltä tavuilta korkeampaa astetta,
+            jotta vältetään “kuolleet päät”.
+          </p>
+        </details>
+      </div>
+    </section>
+
+    <section class="card">
+      <h1>Ruudukko</h1>
+      <div class="status" id="status">Valmis.</div>
+      <div class="gridwrap" style="margin-top:10px">
+        <div id="board" class="board" style="--n:3"></div>
+      </div>
+      <div class="pairlist" id="pairList" style="display:none">
+        <div><b>Vaakaan:</b><br><div id="hWords"></div></div>
+        <div><b>Pystyyn:</b><br><div id="vWords"></div></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Päivämäärä otsikkoon
+    (function(){ 
+      const d = new Date();
+      const pad = n => String(n).padStart(2,'0');
+      const s = pad(d.getDate()) + '.' + pad(d.getMonth()+1) + '.' + d.getFullYear();
+      document.getElementById('today').textContent = s;
+    })();
+
+    // --- Yleisiä apureita ---
+    const randInt = (n) => Math.floor(Math.random()*n);
+    const choice = (arr) => arr[randInt(arr.length)];
+    const shuffle = (a) => { for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+    const flatten2D = (arr) => arr ? arr.reduce((acc,row)=> (acc.push(...row), acc), []) : [];
+    const clamp = (x,lo,hi)=> Math.max(lo, Math.min(hi,x));
+
+    // --- Tilat ---
+    const state = {
+      n: 3,
+      wordsUrl: 'sallitut_sanat.txt',
+      allowedPairs: new Set(),
+      syllables: [],
+      deg: {}, // aste
+      origSolution: null, // 2D matriisi
+      current: null,      // 2D matriisi (sekoitettu+lukitukset)
+      locked: new Set(),  // indeksit joita ei saa vaihtaa
+      maxOcc: 1,
+	  startRandomness: 0,
+      jitter: 0.4         // 0..1
+    };
+
+    // --- UI elementit ---
+    const sizeSel = document.getElementById('sizeSel');
+    const statusEl = document.getElementById('status');
+    const boardEl  = document.getElementById('board');
+    const startBtn = document.getElementById('startBtn');
+    const shuffleBtn = document.getElementById('shuffleBtn');
+    const newBtn = document.getElementById('newBtn');
+    const analysoiBtn = document.getElementById('analysoiBtn');
+
+    const p2 = document.getElementById('p2'); const p3 = document.getElementById('p3'); const p4 = document.getElementById('p4');
+    const p2v= document.getElementById('p2v'); const p3v= document.getElementById('p3v'); const p4v= document.getElementById('p4v');
+    const d2 = document.getElementById('d2'); const d3 = document.getElementById('d3'); const d4 = document.getElementById('d4');
+    const maxOcc = document.getElementById('maxOcc'); const lockCount = document.getElementById('lockCount');
+    const wordUrl = document.getElementById('wordUrl');
+    const rand = document.getElementById('rand'); const randv = document.getElementById('randv');
+
+    const kpiS = document.getElementById('kpiSyll');
+    const kpiP = document.getElementById('kpiPairs');
+    const kpiD = document.getElementById('kpiDeg');
+
+    const hWords = document.getElementById('hWords');
+    const vWords = document.getElementById('vWords');
+    const pairList = document.getElementById('pairList');
+
+    // Synkkaa prosenttinäytöt ja pidä summa 100:na
+    function normalizeMix(){
+      let a = parseInt(p2.value)||0, b=parseInt(p3.value)||0, c=parseInt(p4.value)||0;
+      let s = a+b+c; if (s === 0){ a=60; b=35; c=5; s=100; p2.value=a; p3.value=b; p4.value=c; }
+      // skaalaa suhteessa niin että summa == 100
+      a = Math.round(a*100/s); b = Math.round(b*100/s); c = 100 - a - b;
+      p2.value=a; p3.value=b; p4.value=c;
+      p2v.textContent=a; p3v.textContent=b; p4v.textContent=c;
+    }
+    [p2,p3,p4].forEach(el=> el.addEventListener('input', normalizeMix));
+    normalizeMix();
+
+    // Satunnaisuus
+    function syncRand(){
+      const v = parseInt(rand.value,10) || 0;
+      randv.textContent = v;
+      state.jitter = clamp(v/100, 0, 1);
+    }
+    rand.addEventListener('input', syncRand);
+    syncRand();
+
+    sizeSel.addEventListener('change', () => {
+      state.n = parseInt(sizeSel.value,10);
+      boardEl.style.setProperty('--n', state.n);
+      status('Koko vaihdettu: ' + state.n + '×' + state.n);
+    });
+
+const startR  = document.getElementById('startR');
+const startRv = document.getElementById('startRv');
+function syncStartR(){
+  const v = parseInt(startR.value, 10) || 0;
+  startRv.textContent = v;
+  state.startRandomness = Math.max(0, Math.min(100, v));
+}
+startR.addEventListener('input', syncStartR);
+syncStartR();
+
+    // --- Sanapoolin lataus & analyysi ---
+    async function loadWords(url){
+      const res = await fetch(url, {cache:'no-store'});
+      if (!res.ok) throw new Error('Sanapoolin lataus epäonnistui: ' + res.status);
+      const text = await res.text();
+      const lines = text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+      const allowed = new Set();
+      const sylSet = new Set();
+      for (const line of lines){
+        const m = line.split('-').map(s=>s.trim()).filter(Boolean);
+        if (m.length===2){
+          const [a,b] = m;
+          const A = a.toUpperCase(), B = b.toUpperCase();
+          allowed.add(A + '-' + B);
+          sylSet.add(A); sylSet.add(B);
+        }
+      }
+      // aste: in+out
+      const deg = {};
+      for (const s of sylSet){ deg[s]=0; }
+      const outMap = new Map(); const inMap = new Map();
+      for (const pair of allowed){
+        const [A,B] = pair.split('-');
+        if (!outMap.has(A)) outMap.set(A,new Set());
+        if (!inMap.has(B)) inMap.set(B,new Set());
+        outMap.get(A).add(B);
+        inMap.get(B).add(A);
+      }
+      for (const s of sylSet){
+        const o = outMap.get(s)?.size || 0;
+        const i = inMap.get(s)?.size || 0;
+        deg[s] = o + i;
+      }
+      state.allowedPairs = allowed;
+      state.syllables = Array.from(sylSet);
+      state.deg = deg;
+
+      // KPIt
+      const avg = state.syllables.length ? 
+        (state.syllables.reduce((acc,s)=> acc + (deg[s]||0), 0) / state.syllables.length) : 0;
+      kpiS.textContent = state.syllables.length;
+      kpiP.textContent = allowed.size;
+      kpiD.textContent = avg.toFixed(2);
+    }
+
+    function status(msg, cls){
+      statusEl.className = 'status' + (cls ? ' ' + cls : '');
+      statusEl.innerHTML = msg;
+    }
+
+    analysoiBtn.addEventListener('click', async () => {
+      try{
+        status('Ladataan ja analysoidaan sanapoolia…');
+        await loadWords(wordUrl.value || state.wordsUrl);
+        status('Sanapooli analysoitu. Uniikkeja tavuja: <b>'+state.syllables.length+'</b>. Sallitut parit: <b>'+state.allowedPairs.size+'</b>.', 'ok');
+      }catch(e){
+        console.error(e);
+        status('Virhe: ' + e.message, 'bad');
+      }
+    });
+
+    // --- Pituusluokka ja valintalogiikka ---
+    const lenClass = (t) => (t.length<=2 ? 'len2' : (t.length===3 ? 'len3' : 'len4'));
+    function targetMixCount(n){
+      // halutut lukumäärät koko ruudukkoon
+      normalizeMix();
+      const cells = n*n;
+      const t2 = Math.round(cells * (parseInt(p2.value,10)/100));
+      const t3 = Math.round(cells * (parseInt(p3.value,10)/100));
+      let t4 = cells - t2 - t3; // loput
+      if (t4<0){ t4=0; }
+      return {len2:t2, len3:t3, len4:t4};
+    }
+
+    // muodosta ehdokkaat soluun (r,c) pituus-mixin ja aste-kynnysten mukaan
+    function candidatesForCell(grid, usedCount, r, c, mixRemain){
+      const n = grid.length;
+      const left = c>0 ? grid[r][c-1] : null;
+      const up   = r>0 ? grid[r-1][c] : null;
+
+      // Päätä priorisoitu pituus: valitse se luokka, jossa on eniten "jäljellä".
+      // Pieni satunnaisuus järjestykseen -> uudet ratkaisut helpommin.
+      let order = Object.entries(mixRemain).sort((a,b)=> b[1]-a[1]).map(x=>x[0]);
+      if (Math.random() < state.jitter*0.6) order = shuffle(order);
+
+      const mins = { len2: parseInt(d2.value,10)||0, len3: parseInt(d3.value,10)||0, len4: parseInt(d4.value,10)||0 };
+      const maxOccVal = parseInt(maxOcc.value,10)||1;
+
+      let pool = [];
+      for (const lc of order){
+        // suodata tavut tähän pituusluokkaan
+        let list = state.syllables.filter(t => lenClass(t)===lc && (state.deg[t]||0) >= mins[lc]);
+        // naapurisääntö
+        let okList = list.filter(t => {
+          if ((usedCount[t]||0) >= maxOccVal) return false;
+          if (left && !state.allowedPairs.has(left + '-' + t)) return false;
+          if (up   && !state.allowedPairs.has(up   + '-' + t)) return false;
+          return true;
+        });
+
+        // lajittelu: aste + satunnais-jitter (deg + ε * rand)
+        const eps = state.jitter; // 0..1
+        okList = okList
+          .map(t => ({t, score: (state.deg[t]||0) + eps * Math.random()}))
+          .sort((a,b)=> b.score - a.score)
+          .map(x=>x.t);
+
+        // pientä top-k satunnaisvalintaa
+        if (okList.length > 6 && eps > 0){
+          const k = 3 + Math.floor(3*eps); // 3..6
+          const head = okList.slice(0,k);
+          shuffle(head);
+          okList = head.concat(okList.slice(k));
+        }
+
+        pool.push(...okList);
+        if (okList.length>0) break; // yritä ensin täyttää suurin vajaus
+      }
+      // Turvaverkko: jos pool tyhjä, höllennä pituusvaatimusta ja ota kaikki sopivat
+      if (pool.length===0){
+        let all = state.syllables;
+        // satunnaisesti myös kevennä aste-kynnystä hieman
+        const relax = Math.random() < state.jitter ? 1 : 0;
+        const minAll = Math.max(0, Math.min(mins.len2, mins.len3, mins.len4) - relax);
+        all = all.filter(t => (state.deg[t]||0) >= minAll);
+        let okList = all.filter(t => {
+          if ((usedCount[t]||0) >= maxOccVal) return false;
+          if (left && !state.allowedPairs.has(left + '-' + t)) return false;
+          if (up   && !state.allowedPairs.has(up   + '-' + t)) return false;
+          return true;
+        }).map(t => ({t,score:(state.deg[t]||0) + state.jitter*Math.random()}))
+          .sort((a,b)=> b.score - a.score)
+          .map(x=>x.t);
+        if (okList.length>4) shuffle(okList.slice(0,4));
+        pool.push(...okList);
+      }
+	  // --- Erikoiskäsittely aloitussolulle (0,0) ---
+if (r === 0 && c === 0) {
+  // Suodata perusehdot (pituusluokka, minimi-aste, maxOcc)
+  const mins = { len2: parseInt(d2.value,10)||0, len3: parseInt(d3.value,10)||0, len4: parseInt(d4.value,10)||0 };
+  const maxOccVal = parseInt(maxOcc.value,10)||1;
+  const needed = Object.entries(mixRemain).sort((a,b)=> b[1]-a[1])[0][0]; // aloitetaan siitä luokasta, jota eniten puuttuu
+  let okList = state.syllables.filter(t => {
+    if (lenClass(t) !== needed) return false;
+    if ((state.deg[t]||0) < mins[needed]) return false;
+    if ((usedCount[t]||0) >= maxOccVal) return false;
+    return true; // ei naapurisääntöjä koska (0,0)
+  });
+
+  // Jos mikään ei kelpaa tuosta luokasta, laajenna kaikkiin luokkiin minimi-astetta noudattaen
+  if (okList.length === 0) {
+    okList = state.syllables.filter(t => {
+      const lc = lenClass(t);
+      if ((state.deg[t]||0) < mins[lc]) return false;
+      if ((usedCount[t]||0) >= maxOccVal) return false;
+      return true;
+    });
+  }
+
+  // Sekoita aste- ja satunnaispainotuksen suhteella "startRandomness"
+  const a = (state.startRandomness || 0) / 100;            // 0..1
+  const maxDeg = okList.reduce((m,t)=> Math.max(m, state.deg[t]||0), 1);
+  okList = okList
+    .map(t => ({
+      t,
+      s: (1-a)*(state.deg[t]||0) + a*(Math.random()*maxDeg)  // a=0 → puhdas aste; a=1 → puhdas satunnaisuus
+    }))
+    .sort((x,y) => y.s - x.s)
+    .map(x => x.t);
+
+  // Korvaa pooli tällä aloitusjärjestyksellä
+  pool = okList;
+}
+
+      return pool;
+    }
+
+    // --- Backtracking generaattori ---
+    function generateGrid(n, maxSteps = 60000){
+      const grid = Array.from({length:n}, ()=> Array(n).fill(null));
+      const used = {}; // tavu -> lkm
+      const mixTarget = targetMixCount(n);
+      const mixRemain = { ...mixTarget };
+
+      const linearIdxToRC = (k) => [Math.floor(k/n), k % n];
+
+      let steps = 0;
+      function bt(pos){
+        if (++steps > maxSteps) return false;
+        if (pos === n*n) return true;
+        const [r,c] = linearIdxToRC(pos);
+
+        // muodosta ehdokaslista tämän solun tilanteessa
+        let cands = candidatesForCell(grid, used, r, c, mixRemain);
+        // satunnaista koko listaa kevyesti jitterin mukaan
+        if (state.jitter > 0){
+          const take = Math.min(cands.length, 8);
+          const head = cands.slice(0, take);
+          shuffle(head);
+          cands = head.concat(cands.slice(take));
+        }
+
+        for (const t of cands){
+          grid[r][c] = t;
+          used[t] = (used[t]||0) + 1;
+          const lc = lenClass(t);
+          if (mixRemain[lc] > 0) mixRemain[lc]--;
+
+          if (bt(pos+1)) return true;
+
+          // peru
+          if (mixRemain[lc] >= 0) mixRemain[lc]++;
+          used[t]--; if (used[t]<=0) delete used[t];
+          grid[r][c] = null;
+        }
+        return false;
+      }
+      const ok = bt(0);
+      return ok ? grid : null;
+    }
+
+    // --- Validointi nykyiselle ruudukolle ---
+    function isValid(grid){
+      const n = grid.length;
+      for (let r=0;r<n;r++){
+        for (let c=0;c<n;c++){
+          const t = grid[r][c];
+          if (!t) return false;
+          if (c>0){
+            const L = grid[r][c-1];
+            if (!state.allowedPairs.has(L + '-' + t)) return false;
+          }
+          if (r>0){
+            const U = grid[r-1][c];
+            if (!state.allowedPairs.has(U + '-' + t)) return false;
+          }
+        }
+      }
+      return true;
+    }
+
+    // --- Lukitusten muodostus ja sekoitus ---
+    function setupPlayable(solution){
+      const n = solution.length;
+      const flat = flatten2D(solution);
+      const cells = n*n;
+      const lockN = Math.max(0, Math.min(cells, parseInt(lockCount.value,10)||0));
+
+      // Valitse lukittavat indeksit niin, etteivät jaa riviä tai saraketta keskenään
+      const picks = [];
+      const usedR = new Set(); const usedC = new Set();
+      const indices = shuffle([...Array(cells).keys()]);
+      for (const idx of indices){
+        const r = Math.floor(idx/n), c = idx % n;
+        if (!usedR.has(r) && !usedC.has(c)){
+          picks.push(idx); usedR.add(r); usedC.add(c);
+          if (picks.length===lockN) break;
+        }
+      }
+      // Sekoita muut
+      const unlocked = [];
+      for (let i=0;i<cells;i++) if (!picks.includes(i)) unlocked.push(flat[i]);
+      shuffle(unlocked);
+
+      const startFlat = new Array(cells);
+      for (let i=0;i<cells;i++){
+        if (picks.includes(i)) startFlat[i] = flat[i];
+        else startFlat[i] = unlocked.shift();
+      }
+
+      // Tallenna tilaan
+      state.locked = new Set(picks);
+      state.current = [];
+      for (let r=0;r<n;r++) state.current[r] = startFlat.slice(r*n, r*n+n);
+    }
+
+    // --- Renderöinti ---
+    function renderBoard(grid){
+      const n = grid.length;
+      boardEl.innerHTML = '';
+      boardEl.style.setProperty('--n', n);
+      for (let r=0;r<n;r++){
+        for (let c=0;c<n;c++){
+          const idx = r*n+c;
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          if (state.locked.has(idx)) cell.classList.add('locked');
+          cell.dataset.idx = idx;
+          cell.textContent = grid[r][c] || '??';
+          const s = document.createElement('div'); s.className='small'; s.textContent = (state.deg[grid[r][c]]||0);
+          cell.appendChild(s);
+          boardEl.appendChild(cell);
+        }
+      }
+    }
+
+    function listWords(grid){
+      const n = grid.length;
+      const rows = [];
+      for (let r=0;r<n;r++){
+        let s = [];
+        for (let c=0;c<n-1;c++){
+          s.push((grid[r][c]||'') + (grid[r][c+1]||''));
+        }
+        rows.push(s.join(', '));
+      }
+      const cols = [];
+      for (let c=0;c<n;c++){
+        let s = [];
+        for (let r=0;r<n-1;r++){
+          s.push((grid[r][c]||'') + (grid[r+1][c]||''));
+        }
+        cols.push(s.join(', '));
+      }
+      hWords.innerHTML = rows.map(w => `<div>${w}</div>`).join('');
+      vWords.innerHTML = cols.map(w => `<div>${w}</div>`).join('');
+      pairList.style.display = 'flex';
+    }
+
+    // --- Pelin aloitus / uuden ratkaisun generointi ---
+    async function startGame(){
+      try{
+        status('Valmistellaan…');
+        await loadWords(wordUrl.value || state.wordsUrl);
+        state.n = parseInt(sizeSel.value,10);
+        state.maxOcc = parseInt(maxOcc.value,10)||1;
+
+        // kokeillaan useita kertoja, eri aloituspoluilla
+        let sol = null;
+        let tries = 0;
+        const maxTries = 20;
+        let savedJitter = state.jitter;
+        while (!sol && tries < maxTries){
+          tries++;
+          sol = generateGrid(state.n, 80000);
+          // Pieni “parametrinudged” yritys, jos tiukkaa:
+          if (!sol && state.jitter < 0.9) state.jitter = Math.min(1, state.jitter + 0.1);
+        }
+        state.jitter = savedJitter; // palauta käyttäjän asetus
+        if (!sol){
+          status('Generointi epäonnistui näillä parametreilla. Löysennä seulaa (nosta 2% tai satunnaisuutta, laske minimi-asteita, tai nosta maks. esiintymiä).', 'bad');
+          return;
+        }
+        state.origSolution = sol;
+        setupPlayable(sol);
+        renderBoard(state.current);
+        status('Valmis! Uusi ratkaisu luotu. Lukittuja: <b>'+state.locked.size+'</b>.' , 'ok');
+        listWords(sol);
+      }catch(e){
+        console.error(e);
+        status('Virhe aloituksessa: ' + e.message, 'bad');
+      }
+    }
+
+    // --- Sekoita uudelleen (uusi lähtö samaan ratkaisuun) ---
+    function reshuffle(){
+      if (!state.origSolution){ status('Ei ratkaisua muistissa. Paina “Aloita peli”.','bad'); return; }
+      setupPlayable(state.origSolution);
+      renderBoard(state.current);
+      status('Sekoitettiin uudestaan nykyisestä ratkaisusta.', 'ok');
+    }
+// Välkytys
+
+function flashBoard(times=4, interval=250) {
+  const cells = document.querySelectorAll('.cell');
+  let on = false;
+  let count = 0;
+  const timer = setInterval(() => {
+    on = !on;
+    cells.forEach(c => {
+      if (on) {
+        c.style.backgroundColor = '#ffeb3b';  // kirkkaan keltainen
+      } else {
+        c.style.backgroundColor = '';          // palauttaa normaalin
+      }
+    });
+    if (++count >= times*2) {
+      clearInterval(timer);
+    }
+  }, interval);
+}
+
+    // --- Swap-logiikka pelaamista varten (klikkaa kahta ei-lukittua) ---
+    let firstPick = null;
+    boardEl.addEventListener('click', (e)=>{
+      const cell = e.target.closest('.cell');
+      if (!cell) return;
+      const idx = parseInt(cell.dataset.idx,10);
+      if (state.locked.has(idx)) return; // lukittuja ei vaihdeta
+      const n = state.current.length;
+      const r = Math.floor(idx/n), c = idx % n;
+      if (firstPick === null){
+        firstPick = idx;
+        cell.classList.add('accent');
+      }else if (firstPick === idx){
+        cell.classList.remove('accent');
+        firstPick = null;
+      }else{
+        const i1 = firstPick; const i2 = idx;
+        const r1 = Math.floor(i1/n), c1 = i1 % n;
+        const r2 = Math.floor(i2/n), c2 = i2 % n;
+        // vaihda
+        const tmp = state.current[r1][c1];
+        state.current[r1][c1] = state.current[r2][c2];
+        state.current[r2][c2] = tmp;
+        firstPick = null;
+        // render + tarkistus
+        renderBoard(state.current);
+        if (isValid(state.current)){
+          status('Onnittelut! Kaikki parit muodostavat sanoja – ratkaisu hyväksytty.', 'ok');
+		  flashBoard();
+        }else{
+          status('Vaihdettiin ruutuja. Jatka etsimistä…');
+        }
+      }
+    });
+
+    startBtn.addEventListener('click', startGame);
+    newBtn.addEventListener('click', startGame);      // aina uusi ratkaisu
+    shuffleBtn.addEventListener('click', reshuffle);
+
+    status('Aseta parametrit ja paina “Aloita peli” (tai “Uusi ratkaisu” uusiin sanoihin).');
+  </script>
+</body>
+</html>
