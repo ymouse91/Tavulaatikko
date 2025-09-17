@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#cfc">
   <link rel="manifest" href="manifest_prot.json">
-  <title>Tavuruudukko – generaattori</title>
+  <title>Tavuruudukko – parametroitava generaattori</title>
   <style>
     :root{
       --bg:#f7f7fb;
@@ -138,6 +138,8 @@
         <h2>Sanapooli</h2>
         <label>Lista (kaksi­tavuisia sanoja, muodossa "ta-vu")</label>
         <input type="text" id="wordUrl" value="sallitut_sanat.txt" />
+        <label style="margin-top:8px">Pakotesanat (välilyönnillä eroteltu, esim. "TA-LU KO-TI")</label>
+        <input type="text" id="seedInput" placeholder="TA-LU KO-TI ..." />
         <div class="row" style="margin-top:8px;">
           <button class="btn" id="startBtn" style="display:none">Aloita peli</button>
           <button class="btn secondary" id="newBtn">Uusi ruudukko</button>
@@ -202,7 +204,8 @@
       locked: new Set(),  // indeksit joita ei saa vaihtaa
       maxOcc: 1,
 	  startRandomness: 0,
-      jitter: 0.4         // 0..1
+      jitter: 0.4,        // 0..1
+      seedWords: []
     };
 
     // --- UI elementit ---
@@ -265,6 +268,19 @@ function syncStartR(){
 }
 startR.addEventListener('input', syncStartR);
 syncStartR();
+
+    
+    // --- Pakotesanojen apurit ---
+    function parseSeedWords(str){
+      if (!str) return [];
+      return str.trim().split(/\s+/).map(w => w.split('-').filter(Boolean).map(s=>s.toUpperCase())).filter(a=>a.length>=2);
+    }
+    function seedWordIsValidPairs(arr){
+      for (let i=0;i<arr.length-1;i++){
+        if (!state.allowedPairs.has(arr[i] + '-' + arr[i+1])) return false;
+      }
+      return true;
+    }
 
     // --- Sanapoolin lataus & analyysi ---
     async function loadWords(url){
@@ -445,10 +461,151 @@ if (r === 0 && c === 0) {
 
     // --- Backtracking generaattori ---
     function generateGrid(n, maxSteps = 60000){
-      const grid = Array.from({length:n}, ()=> Array(n).fill(null));
+const grid = Array.from({length:n}, ()=> Array(n).fill(null));
       const used = {}; // tavu -> lkm
       const mixTarget = targetMixCount(n);
       const mixRemain = { ...mixTarget };
+      // --- Pakotesanojen sijoitus ensimmäisen solun jälkeen ---
+      const placedSeedMarks = []; // {r,c,t}
+      const lenClassLocal = (t) => (t.length<=2 ? 'len2' : (t.length===3 ? 'len3' : 'len4'));
+      const maxOccVal = state.maxOcc || 1;
+
+      function canUseTavu(t){ return ((used[t]||0) < maxOccVal); }
+      function canPlaceAt(r,c,t){
+        if (grid[r][c] && grid[r][c] !== t) return false;
+        if (c>0 && grid[r][c-1] && !state.allowedPairs.has(grid[r][c-1] + '-' + t)) return false;
+        if (r>0 && grid[r-1][c] && !state.allowedPairs.has(grid[r-1][c] + '-' + t)) return false;
+        return true;
+      }
+      function canPlaceWord(word, r, c, dr, dc){
+        if (r + dr*(word.length-1) < 0 || r + dr*(word.length-1) >= n) return false;
+        if (c + dc*(word.length-1) < 0 || c + dc*(word.length-1) >= n) return false;
+        for (let k=0;k<word.length;k++){
+          const rr = r + dr*k, cc = c + dc*k; const t = word[k];
+          if (!canUseTavu(t) && grid[rr][cc] !== t) return false;
+          const lc = lenClassLocal(t); if ((mixRemain[lc]||0) <= 0 && grid[rr][cc] !== t) return false;
+          if (!canPlaceAt(rr,cc,t)) return false;
+          if (k>0){ const prev = word[k-1]; if (!state.allowedPairs.has(prev + '-' + t)) return false; }
+        }
+        return true;
+      }
+      function placeWord(word, r, c, dr, dc){
+        for (let k=0;k<word.length;k++){
+          const rr = r + dr*k, cc = c + dc*k; const t = word[k];
+          if (!grid[rr][cc]){
+            grid[rr][cc] = t;
+            used[t] = (used[t]||0) + 1;
+            const lc = lenClassLocal(t); if (mixRemain[lc] > 0) mixRemain[lc]--;
+            placedSeedMarks.push({r:rr,c:cc,t});
+          }
+        }
+      }
+      function unplaceSeedsTo(markLen){
+        while (placedSeedMarks.length > markLen){
+          const {r,c,t} = placedSeedMarks.pop();
+          if (grid[r][c] === t) grid[r][c] = null;
+          used[t] = (used[t]||1) - 1; if (used[t] <= 0) delete used[t];
+          const lc = lenClassLocal(t); mixRemain[lc] = (mixRemain[lc]||0) + 1;
+        }
+      }
+      
+      // --- Pakotesanojen vierekkäinen eteneminen ---
+      function tryForceAdjacent(r, c, t){
+        // Jos t:llä ei ole seed-seuraajia, mitään ei pakoteta
+        const nextSet = state.seedNext && state.seedNext.get(t);
+        if (!nextSet || nextSet.size === 0) return true;
+
+        const options = [];
+        for (const nx of nextSet){
+          // oikealle
+          if (c+1 < n){
+            const rr = r, cc = c+1;
+            if (grid[rr][cc] === null || grid[rr][cc] === nx){
+              if (state.allowedPairs.has(t + '-' + nx) && canPlaceAt(rr, cc, nx)){
+                options.push({r: rr, c: cc, t: nx});
+              }
+            }
+          }
+          // alas
+          if (r+1 < n){
+            const rr = r+1, cc = c;
+            if (grid[rr][cc] === null || grid[rr][cc] === nx){
+              if (state.allowedPairs.has(t + '-' + nx) && canPlaceAt(rr, cc, nx)){
+                options.push({r: rr, c: cc, t: nx});
+              }
+            }
+          }
+        }
+
+        if (options.length === 0) {
+          // Ei sopivia naapureita → ei pakoteta
+          return true;
+        }
+
+        // Yritä asettaa jokin vaihtoehdoista (DFS). Jos yksikään ei onnistu, palauta false.
+        for (const opt of options){
+          const rr = opt.r, cc = opt.c, nx = opt.t;
+          const prevVal = grid[rr][cc];
+          const needPlace = (prevVal !== nx);
+          let lcNX = null;
+          if (needPlace){
+            // quota ja occ
+            if (!canUseTavu(nx)) continue;
+            lcNX = lenClassLocal ? lenClassLocal(nx) : lenClass(nx);
+            if ((mixRemain[lcNX]||0) <= 0) continue;
+
+            grid[rr][cc] = nx;
+            used[nx] = (used[nx]||0) + 1;
+            if (mixRemain[lcNX] > 0) mixRemain[lcNX]--;
+          }
+
+          // Ketjuta: jos nx:llä on oma seuraaja seedsissä, koeta sitäkin
+          const okChain = tryForceAdjacent(rr, cc, nx);
+          if (okChain) return true;
+
+          // Backtracka tämän vaihtoehdon lisäys
+          if (needPlace){
+            if (mixRemain[lcNX] >= 0) mixRemain[lcNX]++;
+            used[nx] = (used[nx]||1) - 1;
+            if (used[nx] <= 0) delete used[nx];
+            grid[rr][cc] = prevVal === null ? null : prevVal;
+          }
+        }
+        return false;
+      }
+
+      function tryPlaceSeedWordsAfterFirst(){
+        if (!state.seedWords || state.seedWords.length===0) return true;
+        const words = state.seedWords.slice();
+        // Etsi sijoitusvaihtoehdot (vaaka & pysty) jokaiselle sanalle
+        const options = words.map(w => ({ w, cands: [] }));
+        for (const o of options){
+          for (let r=0;r<n;r++) for (let c=0;c<n;c++){
+            if (canPlaceWord(o.w, r, c, 0, 1)) o.cands.push({r,c,dr:0,dc:1});
+            if (canPlaceWord(o.w, r, c, 1, 0)) o.cands.push({r,c,dr:1,dc:0});
+          }
+        }
+        // Aseta ahtaimmat ensin
+        options.sort((a,b)=> a.cands.length - b.cands.length);
+        const startMark = placedSeedMarks.length;
+        function dfs(i){
+          if (i>=options.length) return true;
+          const {w, cands} = options[i];
+          if (cands.length===0) return dfs(i+1); // sallitaan ohitus
+          for (const cand of cands){
+            const markLen = placedSeedMarks.length;
+            placeWord(w, cand.r, cand.c, cand.dr, cand.dc);
+            if (dfs(i+1)) return true;
+            unplaceSeedsTo(markLen);
+          }
+          // Jos mikään ei sopinut yhteen muiden kanssa, ohita tämä sana
+          return dfs(i+1);
+        }
+        const ok = dfs(0);
+        if (!ok) unplaceSeedsTo(startMark);
+        return true;
+      }
+
 
       const linearIdxToRC = (k) => [Math.floor(k/n), k % n];
 
@@ -466,8 +623,7 @@ if (r === 0 && c === 0) {
           const head = cands.slice(0, take);
           shuffle(head);
           cands = head.concat(cands.slice(take));
-        }
-
+}
         for (const t of cands){
           grid[r][c] = t;
           used[t] = (used[t]||0) + 1;
@@ -590,7 +746,22 @@ if (r === 0 && c === 0) {
       try{
         status('Valmistellaan…');
         await loadWords(wordUrl.value || state.wordsUrl);
-        state.n = parseInt(sizeSel.value,10);
+        
+        // Lue pakotesanat
+        const seedStr = (document.getElementById('seedInput')?.value || '').trim();
+        const parsedSeeds = parseSeedWords(seedStr);
+        state.seedWords = parsedSeeds.filter(seedWordIsValidPairs);
+        // Rakenna next-sanakartta: tavu -> joukko seuraavia tavuja syötetyistä pakotesanoista
+        state.seedNext = new Map();
+        for (const w of state.seedWords){
+          for (let i=0;i<w.length-1;i++){
+            const a = w[i], b = w[i+1];
+            if (!state.seedNext.has(a)) state.seedNext.set(a, new Set());
+            state.seedNext.get(a).add(b);
+          }
+        }
+        if (parsedSeeds.length && state.seedWords.length === 0){ console.warn('Pakotesanoja syötettiin, mutta yksikään ei läpäissyt tavuparitarkistusta.'); }
+state.n = parseInt(sizeSel.value,10);
         state.maxOcc = parseInt(maxOcc.value,10)||1;
 
         // kokeillaan useita kertoja, eri aloituspoluilla
