@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>Tavukko</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      text-align: center;
+      margin: 20px;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 50%, #16213e 100%);
+      color: #fff;
+      transform: scale(1);
+      transform-origin: top center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 3em;
+      font-weight: 700;
+      color: #64f4ff;
+      text-shadow: 0 0 30px rgba(100, 244, 255, 0.6), 0 0 60px rgba(100, 244, 255, 0.3);
+      letter-spacing: 2px;
+      padding: 20px 40px;
+      background: rgba(100, 244, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(100, 244, 255, 0.2);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(100, 244, 255, 0.15),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      display: inline-block;
+    }
+
+    .grid {
+      display: grid;
+      gap: 5px;
+      justify-content: center;
+      margin: 10px auto;
+    }
+
+    .grid button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      cursor: pointer;
+      transition: background 0.2s ease;
+      width: 60px;
+      height: 60px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .grid button:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1));
+      box-shadow: 0 12px 30px rgba(100, 244, 255, 0.3);
+    }
+
+    .grid button.correct {
+      background: linear-gradient(135deg, rgba(76, 220, 100, 0.3), rgba(76, 220, 100, 0.1));
+      border: 1px solid rgba(76, 220, 100, 0.5);
+      color: #4cdc64;
+      box-shadow: 0 8px 20px rgba(76, 220, 100, 0.2);
+    }
+
+    .grid button.flash-error {
+      background: linear-gradient(135deg, rgba(255, 69, 100, 0.3), rgba(255, 69, 100, 0.1)) !important;
+      border: 1px solid rgba(255, 69, 100, 0.5) !important;
+      box-shadow: 0 8px 20px rgba(255, 69, 100, 0.2) !important;
+      animation: shake 0.4s cubic-bezier(0.36, 0, 0.66, -0.56);
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .won {
+      font-weight: bold;
+      color: #4cdc64;
+      font-size: 0.9em;
+      padding: 15px;
+      background: rgba(76, 220, 100, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(76, 220, 100, 0.3);
+      border-radius: 15px;
+      margin-top: 15px;
+    }
+
+    .scroll-box {
+      max-height: 200px;
+      overflow-y: auto;
+      margin: 10px auto;
+      padding: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      width: 80%;
+      min-width: 180px;
+      max-width: 280px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      text-align: left;
+      font-size: 14px;
+      border-radius: 15px;
+    }
+
+    button {
+      font-size: 16px;
+      padding: 6px 12px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      cursor: pointer;
+      margin: 4px;
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1));
+      box-shadow: 0 12px 30px rgba(100, 244, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    #startBtn {
+      background: linear-gradient(135deg, rgba(100, 244, 255, 0.3), rgba(100, 244, 255, 0.1));
+      border: 1px solid rgba(100, 244, 255, 0.4);
+    }
+
+    #startBtn:hover {
+      background: linear-gradient(135deg, rgba(100, 244, 255, 0.4), rgba(100, 244, 255, 0.15));
+      box-shadow: 0 12px 30px rgba(100, 244, 255, 0.3);
+    }
+
+    #lopetaBtn:hover {
+      background: linear-gradient(135deg, rgba(255, 69, 100, 0.4), rgba(255, 69, 100, 0.15));
+    }
+
+    #apuaBtn:hover {
+      background: linear-gradient(135deg, rgba(255, 193, 7, 0.4), rgba(255, 193, 7, 0.15));
+    }
+
+    #ohjeBtn:hover {
+      background: linear-gradient(135deg, rgba(100, 244, 255, 0.4), rgba(100, 244, 255, 0.15));
+    }
+
+    .scroll-box a {
+      text-decoration: none;
+      color: #64f4ff;
+    }
+
+    .scroll-box a:hover {
+      text-decoration: underline;
+      color: #a0d8ff;
+    }
+
+    dialog {
+      background: rgba(20, 20, 35, 0.95) !important;
+      backdrop-filter: blur(30px) !important;
+      -webkit-backdrop-filter: blur(30px) !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      border-radius: 24px !important;
+      padding: 30px !important;
+      color: #fff;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    dialog::backdrop {
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+    }
+
+    dialog h2 {
+      background: linear-gradient(135deg, #64f4ff 0%, #a0d8ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* iPhone portaali */
+    @media (max-width: 480px) and (orientation: portrait) {
+      body {
+        padding: 12px;
+      }
+
+      h1 {
+        font-size: 1.8em;
+      }
+
+      .grid button {
+        width: 55px;
+        height: 55px;
+        font-size: 16px;
+      }
+
+      button {
+        font-size: 14px;
+        padding: 8px 14px;
+      }
+    }
+
+    /* iPad pysty */
+    @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+      body {
+        padding: 25px;
+      }
+
+      h1 {
+        font-size: 2.5em;
+      }
+
+      .grid button {
+        width: 75px;
+        height: 75px;
+        font-size: 19px;
+      }
+
+      button {
+        font-size: 17px;
+        padding: 12px 24px;
+      }
+    }
+
+    /* iPad vaakasuunta */
+    @media (min-width: 1024px) and (orientation: landscape) {
+      body {
+        transform: scale(1.3);
+      }
+
+      #otsikkoBtn {
+        margin-top: -20px;
+        display: inline-block;
+      }
+    }
+
+    html, body {
+      overflow-x: hidden;
+    }
+  </style>
+</head>
+<body>
+
+<dialog id="ohjeet" style="max-width: 600px; width: 90%; text-align: left;">
+  <h2>Ohjeet</h2>
+  <p><strong>Tavukko</strong> on sanapeli, jossa tavoitteena on muodostaa täysi ruudukko suomenkielisiä <b>kaksitavuisia sanoja</b>.</p>
+  <ul>
+    <li>Ruudukko on 3×3-kokoinen.</li>
+    <li>Paina <strong>Aloita peli</strong>, niin tavut ilmestyvät ruudukkoon.</li>
+    <li>Valitse kaksi ruutua vuorotellen vaihtaaksesi niiden paikkaa.</li>
+    <li>Tavoitteena on, että kaikki vaakaan ja pystyyn muodostuvat tavuparit ovat oikeita sanoja.</li>
+    <li>Vihreät ruudut ovat oikeassa paikassa eivätkä ole enää siirrettävissä.</li>
+    <li><strong>Apua</strong> voi paljastaa tai siirtää yhden oikean tavun.</li>
+    <li><strong>Lopeta</strong> näyttää oikean ratkaisun ja linkit sanojen selityksiin.</li>
+  </ul>
+  <p>Versio 1.2s</p>
+  <div style="text-align: center; margin-top: 20px;">
+    <button onclick="document.getElementById('ohjeet').close()" id="okBtn">OK</button>
+  </div>
+</dialog>
+
+<h1>
+  <button id="otsikkoBtn" onclick="document.getElementById('ohjeet').showModal()" style="font-size: 1.5em; font-weight: bold; border: none; background: none; cursor: pointer;">
+    Tavukko
+  </button>
+</h1>
+
+<div class="controls">
+  <button id="ohjeBtn" onclick="document.getElementById('ohjeet').showModal()">Ohjeet</button>
+  <button id="startBtn" onclick="startGame()" disabled>Aloita peli</button>
+  <button id="apuaBtn" onclick="annaApua()" style="display:none">Apua</button>
+  <button id="lopetaBtn" onclick="naytaRatkaisu()" style="display:none">Lopeta</button>
+</div>
+
+<div id="grid" class="grid"></div>
+<div id="status" class="won"></div>
+
+<button id="install-button" style="
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  padding: 10px 16px;
+  font-size: 16px;
+  border-radius: 8px;
+  background-color: #0078D4;
+  color: white;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  cursor: pointer;
+">
+  📥 Asenna Tavukko
+</button>
+
+<script>
+  const gridElem = document.getElementById("grid");
+  const statusElem = document.getElementById("status");
+  const startBtn = document.getElementById("startBtn");
+  const lopetaBtn = document.getElementById("lopetaBtn");
+  
+  let aloitusaika = null;
+
+  let koko = 3;
+  let ratkaisu = [];
+  let nykyinen = [];
+  let valinta = null;
+  let peliKaynnissa = true;
+  let korostukset = new Set();
+  let lukitut = new Set();
+  let sallitutSanat = new Set();
+  let tavulista = [];
+  let vilautusIndeksi = null;
+  let apuVaihtoja = 0;
+  let apuPaljastuksia = 0;
+
+  const kielletytSanat = new Set([
+    "ka-lu"
+  ]);
+  
+const alkuruudukko = [
+  ["ta", "vuk", "ko"],
+  ["vuk", "ko", "ta"],
+  ["ko", "ta", "vuk"]
+];
+
+  async function lataaSanat() {
+    const response = await fetch("sallitut_sanat.txt");
+    const teksti = await response.text();
+    const rivit = teksti.split(/\r?\n/).filter(r => r.includes("-") && !kielletytSanat.has(r));
+    sallitutSanat = new Set(rivit);
+
+    const kaikkiTavut = rivit.flatMap(r => r.split("-"));
+    const laskuri = {};
+    kaikkiTavut.forEach(t => { laskuri[t] = (laskuri[t] || 0) + 1; });
+    tavulista = Object.keys(laskuri);
+    startBtn.disabled = false;
+  }
+
+  function shuffle(arr) {
+    let a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(() => console.log('Service Worker rekisteröity'))
+      .catch(err => console.error('SW virhe', err));
+  }
+
+  lataaSanat().then(() => {
+    console.log("Sanalista ladattu.");
+    startBtn.style.display = "none";
+    naytaAlkuanimaatio();
+  });
+
+  function startGame() {
+    document.getElementById("startBtn").style.display = "none";
+    document.getElementById("lopetaBtn").style.display = "inline-block";
+    document.getElementById("apuaBtn").style.display = "inline-block";
+    
+    aloitusaika = new Date();
+    apuVaihtoja = 0;
+    apuPaljastuksia = 0;
+    statusElem.innerHTML = "";
+
+    if (sallitutSanat.size === 0) {
+      alert("Sanoja ei ladattu.");
+      return;
+    }
+
+    koko = 3;
+    try {
+      ratkaisu = generoiKelvollinenRuudukko(koko);
+    } catch (e) {
+      console.error(e);
+      alert('Ruudukon generointi epäonnistui: ' + e.message);
+      return;
+    }
+    if (!ratkaisu || !Array.isArray(ratkaisu) || !Array.isArray(ratkaisu[0])) { throw new Error('Generointi epäonnistui: ratkaisu ei ole 2D-taulukko.'); }
+    const tavut = flatten2D(ratkaisu);
+    korostukset.clear();
+    lukitut.clear();
+    let oikeatIndeksit = [];
+
+    const valitseIndeksi = () => Math.floor(Math.random() * tavut.length);
+    const eka = valitseIndeksi();
+    oikeatIndeksit.push(eka);
+    const tavutIlman = tavut.filter((_, i) => !oikeatIndeksit.includes(i));
+    const sekoitetut = shuffle(tavutIlman);
+
+    for (const i of oikeatIndeksit) {
+      sekoitetut.splice(i, 0, tavut[i]);
+      korostukset.add(i);
+      lukitut.add(i);
+    }
+
+    nykyinen = sekoitetut;
+    peliKaynnissa = true;
+    valinta = null;
+    render();
+
+    const ruudut = document.querySelectorAll(".grid button");
+    ruudut.forEach((btn, i) => {
+      setTimeout(() => {
+        btn.style.transition = "transform 0.3s ease, background-color 0.3s ease";
+        btn.style.transform = "scale(1.15)";
+        setTimeout(() => {
+          btn.style.transform = "scale(1)";
+        }, 300);
+      }, i * 30);
+    });
+  }
+
+  function render() {
+    gridElem.style.gridTemplateColumns = `repeat(${koko}, 60px)`;
+    gridElem.innerHTML = "";
+
+    for (let i = 0; i < koko * koko; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = nykyinen[i];
+      btn.onclick = () => valitseTaiVaihda(i);
+
+      if (valinta === i) btn.style.background = "linear-gradient(135deg, rgba(100, 244, 255, 0.4), rgba(100, 244, 255, 0.2))";
+      if (valinta === i) btn.style.border = "2px solid rgba(100, 244, 255, 0.6)";
+      if (valinta === i) btn.style.color = "#fff";
+      if (korostukset.has(i)) btn.classList.add("correct");
+      if (i === vilautusIndeksi) btn.classList.add("flash-error");
+
+      gridElem.appendChild(btn);
+    }
+  }
+
+  function valitseTaiVaihda(i) {
+    if (!peliKaynnissa) return;
+
+    if (lukitut.has(i)) {
+      vilautusIndeksi = i;
+      render();
+      setTimeout(() => {
+        vilautusIndeksi = null;
+        render();
+      }, 400);
+      return;
+    }
+
+    if (valinta === null) {
+      valinta = i;
+      render();
+      return;
+    }
+
+    if (valinta === i) {
+      valinta = null;
+      render();
+      return;
+    }
+
+    if (lukitut.has(i) || lukitut.has(valinta)) {
+      valinta = null;
+      render();
+      return;
+    }
+
+    [nykyinen[i], nykyinen[valinta]] = [nykyinen[valinta], nykyinen[i]];
+    valinta = null;
+
+    render();
+    setTimeout(() => {
+      tarkistaVoitto();
+    }, 60);
+  }
+
+  function generoiKelvollinenRuudukko(n) {
+    const grid = Array.from({ length: n }, () => Array(n).fill(""));
+    const käytetyt = new Map();
+
+    function shuffleInPlace(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function ehdokkaat(r, c) {
+      const arr = Array.isArray(tavulista) ? tavulista.slice() : Array.from(tavulista);
+      shuffleInPlace(arr);
+      const out = [];
+      for (const tavu of arr) {
+        if ((käytetyt.get(tavu) || 0) >= 1) continue;
+        if (c > 0) {
+          const left = grid[r][c - 1];
+          if (left && !sallitutSanat.has(`${left}-${tavu}`)) continue;
+        }
+        if (r > 0) {
+          const up = grid[r - 1][c];
+          if (up && !sallitutSanat.has(`${up}-${tavu}`)) continue;
+        }
+        out.push(tavu);
+      }
+      return out;
+    }
+
+    function bt(pos) {
+      if (pos === n * n) return true;
+      const r = Math.floor(pos / n);
+      const c = pos % n;
+      const cand = ehdokkaat(r, c);
+      for (const tavu of cand) {
+        grid[r][c] = tavu;
+        käytetyt.set(tavu, (käytetyt.get(tavu) || 0) + 1);
+        if (bt(pos + 1)) return true;
+        const cnt = (käytetyt.get(tavu) || 1) - 1;
+        if (cnt <= 0) käytetyt.delete(tavu); else käytetyt.set(tavu, cnt);
+        grid[r][c] = "";
+      }
+      return false;
+    }
+
+    if (!bt(0)) {
+      alert("Ei onnistuttu muodostamaan kelvollista ruudukkoa (backtracking).");
+      return Array.from({ length: n }, () => Array(n).fill("??"));
+    }
+    return grid;
+  }
+
+  function tarkistaVoitto() {
+    const grid = [];
+    for (let r = 0; r < koko; r++) {
+      grid.push(nykyinen.slice(r * koko, (r + 1) * koko));
+    }
+
+    for (let r = 0; r < koko; r++) {
+      for (let c = 0; c < koko; c++) {
+        if (c < koko - 1 && !sallitutSanat.has(`${grid[r][c]}-${grid[r][c + 1]}`)) return;
+        if (r < koko - 1 && !sallitutSanat.has(`${grid[r][c]}-${grid[r + 1][c]}`)) return;
+      }
+    }
+
+    const ruudut = document.querySelectorAll(".grid button");
+    ruudut.forEach((btn, i) => {
+      setTimeout(() => {
+        btn.style.transition = "transform 0.3s ease, background-color 0.3s ease";
+        btn.style.transform = "scale(1.15)";
+        btn.style.backgroundColor = "#dfffd0";
+        setTimeout(() => {
+          btn.style.transform = "scale(1)";
+        }, 300);
+      }, i * 30);
+    });
+
+    setTimeout(() => {
+      const vaaka = [], pysty = [];
+      for (let r = 0; r < koko; r++) {
+        for (let c = 0; c < koko - 1; c++) {
+          vaaka.push(`${grid[r][c]}-${grid[r][c + 1]}`);
+        }
+      }
+      for (let c = 0; c < koko; c++) {
+        for (let r = 0; r < koko - 1; r++) {
+          pysty.push(`${grid[r][c]}-${grid[r + 1][c]}`);
+        }
+      }
+
+      document.getElementById("startBtn").style.display = "inline-block";
+      document.getElementById("lopetaBtn").style.display = "none";
+      document.getElementById("apuaBtn").style.display = "none";
+      peliKaynnissa = false;
+
+      let loppuaika = new Date();
+      let kestoMs = loppuaika - aloitusaika;
+      let sekunnit = Math.floor(kestoMs / 1000);
+      let minuutit = Math.floor(sekunnit / 60);
+      sekunnit = sekunnit % 60;
+
+      naytaSanat(
+        vaaka,
+        pysty,
+        `Aikaa kului: <b>${minuutit} min ${sekunnit} s</b><br>Apua pyydetty: <b>${apuVaihtoja + apuPaljastuksia}</b> kertaa`
+      );
+    }, koko * koko * 30 + 500);
+  }
+
+  function naytaRatkaisu() {
+    document.getElementById("startBtn").style.display = "inline-block";
+    document.getElementById("lopetaBtn").style.display = "none";
+    document.getElementById("apuaBtn").style.display = "none";
+
+    nykyinen = ratkaisu.flat();
+    peliKaynnissa = false;
+    render();
+
+    const vaaka = [], pysty = [];
+    for (let r = 0; r < koko; r++) {
+      for (let c = 0; c < koko - 1; c++) {
+        vaaka.push(`${ratkaisu[r][c]}-${ratkaisu[r][c + 1]}`);
+      }
+    }
+    for (let c = 0; c < koko; c++) {
+      for (let r = 0; r < koko - 1; r++) {
+        pysty.push(`${ratkaisu[r][c]}-${ratkaisu[r + 1][c]}`);
+      }
+    }
+    naytaSanat(vaaka, pysty, "Ratkaisun sanat.");
+  }
+
+  function naytaSanat(vaaka, pysty, otsikko) {
+    statusElem.innerHTML = `
+      <div>${otsikko}</div>
+      <div class="scroll-box" style="display: flex; gap: 20px; justify-content: center;">
+        <div><b>Vaakaan:</b><br>
+          ${vaaka.map(s => `<a href='https://www.kielitoimistonsanakirja.fi/#/${s.replace("-", "").toLowerCase()}' target='_blank'>${s.replace("-", "")}</a>`).join("<br>")}
+        </div>
+        <div><b>Pystyyn:</b><br>
+          ${pysty.map(s => `<a href='https://www.kielitoimistonsanakirja.fi/#/${s.replace("-", "").toLowerCase()}' target='_blank'>${s.replace("-", "")}</a>`).join("<br>")}
+        </div>
+      </div>`;
+  }
+
+  function annaApua() {
+    if (!peliKaynnissa) return;
+
+    if (valinta !== null) {
+      const valittuTavu = nykyinen[valinta];
+      for (let i = 0; i < nykyinen.length; i++) {
+        const r = Math.floor(i / koko);
+        const c = i % koko;
+        if (ratkaisu[r][c] === valittuTavu) {
+          if (i === valinta) {
+            lukitut.add(i);
+            korostukset.add(i);
+            apuVaihtoja++;
+          } else {
+            [nykyinen[i], nykyinen[valinta]] = [nykyinen[valinta], nykyinen[i]];
+            lukitut.add(i);
+            korostukset.add(i);
+            apuVaihtoja++;
+          }
+          valinta = null;
+          render();
+          return;
+        }
+      }
+    }
+
+    for (let i = 0; i < nykyinen.length; i++) {
+      const r = Math.floor(i / koko);
+      const c = i % koko;
+      if (nykyinen[i] === ratkaisu[r][c] && !korostukset.has(i)) {
+        lukitut.add(i);
+        korostukset.add(i);
+        apuPaljastuksia++;
+        valinta = null;
+        render();
+        return;
+      }
+    }
+
+    alert("Ei löytynyt uutta oikeaa tavua paljastettavaksi.");
+  }
+
+  function naytaAlkuanimaatio() {
+    koko = 3;
+    gridElem.style.gridTemplateColumns = `repeat(${koko}, 60px)`;
+    gridElem.innerHTML = "";
+
+    const nappulat = [];
+
+    for (let r = 0; r < koko; r++) {
+      for (let c = 0; c < koko; c++) {
+        const btn = document.createElement("button");
+        btn.textContent = "";
+        btn.disabled = true;
+        gridElem.appendChild(btn);
+        nappulat.push(btn);
+      }
+    }
+
+    let viive = 0;
+    for (let r = 0; r < koko; r++) {
+      for (let c = 0; c < koko; c++) {
+        const indeksi = r * koko + c;
+        setTimeout(() => {
+          nappulat[indeksi].textContent = alkuruudukko[r][c];
+          nappulat[indeksi].style.backgroundColor = "rgba(255, 255, 255, 0.15)";
+          nappulat[indeksi].style.color = "#0f0f1e";
+        }, viive);
+        viive += 200;
+      }
+    }
+
+    setTimeout(() => {
+      startBtn.style.display = "inline-block";
+    }, viive + 500);
+  }
+
+  let deferredPrompt;
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    console.log('beforeinstallprompt saatiin');
+    e.preventDefault();
+    deferredPrompt = e;
+
+    const installBtn = document.getElementById('install-button');
+    installBtn.style.display = 'inline-block';
+
+    installBtn.addEventListener('click', () => {
+      installBtn.style.display = 'none';
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('Käyttäjä hyväksyi asennuksen');
+        } else {
+          console.log('Käyttäjä hylkäsi asennuksen');
+        }
+        deferredPrompt = null;
+      });
+    });
+  });
+
+  window.addEventListener('appinstalled', () => {
+    console.log('Sovellus asennettiin!');
+    document.getElementById('install-button').style.display = 'none';
+  });
+
+  function flatten2D(arr){
+    if (!Array.isArray(arr)) return [];
+    if (typeof arr.flat === 'function') return arr.flat();
+    const out = [];
+    for (let i = 0; i < arr.length; i++){
+      const row = Array.isArray(arr[i]) ? arr[i] : [];
+      for (let j = 0; j < row.length; j++){
+        out.push(row[j]);
+      }
+    }
+    return out;
+  }
+</script>
+
+</body>
+</html>

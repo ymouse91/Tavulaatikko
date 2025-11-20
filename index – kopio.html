@@ -2,23 +2,10 @@
 <html lang="fi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, user-scalable=no" />
-		<!-- iOS PWA -liput -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-<!-- Yleinen väriteema (safari, android ym.) -->
-<meta name="theme-color" content="#0F172A">
-
-<!-- Web manifesti (nimi voi olla myös manifest.json, jos niin olet tehnyt) -->
-<link rel="manifest" href="manifest.json">
-
-<!-- iOS:lle pitää olla erikseen apple-touch-icon -->
-<link rel="apple-touch-icon" href="./icon-192.png">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#cfc">
   <title>Tavukko</title>
-
+  <link rel="manifest" href="manifest.json">
   <style>
     body {
       font-family: sans-serif;
@@ -263,7 +250,11 @@ const alkuruudukko = [
     return a;
   }
 
-
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(() => console.log('Service Worker rekisteröity'))
+      .catch(err => console.error('SW virhe', err));
+  }
 
   //lataaSanat().then(() => console.log("Sanalista ladattu."));
 lataaSanat().then(() => {
@@ -676,12 +667,6 @@ function flatten2D(arr){
   return out;
 }
 
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(() => console.log('Service Worker rekisteröity'))
-      .catch(err => console.error('SW virhe', err));
-  }
-  
 </script>
 
 

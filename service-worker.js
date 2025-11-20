@@ -1,11 +1,11 @@
-const CACHE_NAME = 'tavupeli-v1';
+const CACHE_NAME = 'tavupeli-v2';
 const FILES_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/sallitut_sanat.txt',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png'
+  './',
+  './index.html',
+  './sallitut_sanat.txt',
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
